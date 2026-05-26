@@ -1,0 +1,44 @@
+# NasTech Cloudflare Workers Configuration
+# Deploy each worker with: wrangler deploy --config wrangler.toml
+# or: cd worker && npx wrangler deploy <worker-name>.js
+
+# ──────────────────────────────────────────────
+# 1. API Worker  →  api.nastech.workers.dev
+# ──────────────────────────────────────────────
+[[workers]]
+name = "nastech-api"
+main = "api-worker.js"
+compatibility_date = "2024-01-01"
+
+[workers.vars]
+# BACKEND_URL = "https://your-self-hosted-server.com"  # optional
+
+# ──────────────────────────────────────────────
+# 2. AI Worker  →  ai.nastech.workers.dev
+# ──────────────────────────────────────────────
+[[workers]]
+name = "nastech-ai"
+main = "ai-worker.js"
+compatibility_date = "2024-01-01"
+
+[workers.ai]
+binding = "AI"
+
+# ──────────────────────────────────────────────
+# 3. Privacy Worker  →  privacy.nastech.workers.dev
+# ──────────────────────────────────────────────
+[[workers]]
+name = "nastech-privacy"
+main = "privacy-worker.js"
+compatibility_date = "2024-01-01"
+
+# ──────────────────────────────────────────────
+# 4. Web App Worker  →  ba.nastech.workers.dev
+# ──────────────────────────────────────────────
+[[workers]]
+name = "nastech-ba"
+main = "ba-worker.js"
+compatibility_date = "2024-01-01"
+
+[workers.vars]
+# APP_URL = "https://your-self-hosted-app.com"  # optional
