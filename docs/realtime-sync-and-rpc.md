@@ -61,8 +61,8 @@ This is how Happy does point-to-point control traffic on top of the same transpo
 
 ## Current Sharp Edges
 
-- `packages/happy-agent/src/machineRpc.ts` still creates one-off caller sockets for machine `spawn` and `resume` instead of reusing a long-lived caller connection.
-- `packages/happy-server/sources/app/api/socket/rpcHandler.ts` still mixes room lookup, reconnect grace, mid-call presence checking, and metric emission in one place.
+- `packages/nastech-agent/src/machineRpc.ts` still creates one-off caller sockets for machine `spawn` and `resume` instead of reusing a long-lived caller connection.
+- `packages/nastech-server/sources/app/api/socket/rpcHandler.ts` still mixes room lookup, reconnect grace, mid-call presence checking, and metric emission in one place.
 
 ## Debugging
 

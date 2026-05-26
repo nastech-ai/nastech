@@ -62,11 +62,11 @@ pnpm install
 ### Happy App (Mobile + Web)
 
 ```bash
-pnpm --filter happy-app start          # Expo dev server
-pnpm --filter happy-app ios:dev        # iOS simulator
-pnpm --filter happy-app android:dev    # Android emulator
+pnpm --filter nastech-app start          # Expo dev server
+pnpm --filter nastech-app ios:dev        # iOS simulator
+pnpm --filter nastech-app android:dev    # Android emulator
 pnpm web                                # Browser (shortcut)
-pnpm --filter happy-app typecheck      # Run after all changes
+pnpm --filter nastech-app typecheck      # Run after all changes
 ```
 
 The app has three build variants — all can be installed simultaneously on the same device:
@@ -82,8 +82,8 @@ Swap `ios:dev` for `ios:preview` or `ios:production` (same for `android:`).
 #### macOS Desktop (Tauri)
 
 ```bash
-pnpm --filter happy-app tauri:dev      # Run with hot reload
-pnpm --filter happy-app tauri:build:dev
+pnpm --filter nastech-app tauri:dev      # Run with hot reload
+pnpm --filter nastech-app tauri:build:dev
 ```
 
 ### Happy CLI
@@ -106,23 +106,23 @@ To sandbox dev data, set `HAPPY_HOME_DIR=~/.happy-dev` in your shell before runn
 ### NasTech Server
 
 ```bash
-pnpm --filter happy-server standalone:dev   # Local server (no Docker needed)
+pnpm --filter nastech-server standalone:dev   # Local server (no Docker needed)
 ```
 
 Runs on `localhost:3005` with embedded PGlite. To point the app at your local server:
 
 ```bash
-EXPO_PUBLIC_NASTECH_SERVER_URL=http://localhost:3005 pnpm --filter happy-app start
+EXPO_PUBLIC_NASTECH_SERVER_URL=http://localhost:3005 pnpm --filter nastech-app start
 ```
 
 ## Project Structure
 
 This is a monorepo with four packages:
 
-- **happy-app** — React Native + Expo mobile/web client
-- **happy-cli** — Node.js CLI that wraps Claude Code and Codex
-- **happy-agent** — Remote agent control
-- **happy-server** — Backend for encrypted sync
+- **nastech-app** — React Native + Expo mobile/web client
+- **nastech-cli** — Node.js CLI that wraps Claude Code and Codex
+- **nastech-agent** — Remote agent control
+- **nastech-server** — Backend for encrypted sync
 
 For architecture details, check the [docs/](.) folder or ask Happy itself — it knows how the project is set up.
 

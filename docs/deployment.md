@@ -1,6 +1,6 @@
 # Deployment
 
-This document describes how to deploy the Happy backend (`packages/happy-server`) and the infrastructure it expects.
+This document describes how to deploy the Happy backend (`packages/nastech-server`) and the infrastructure it expects.
 
 ## Runtime overview
 - **App server:** Node.js running `tsx ./sources/main.ts` (Fastify + Socket.IO).
@@ -17,7 +17,7 @@ This document describes how to deploy the Happy backend (`packages/happy-server`
 2. **Redis**
    - Required by startup (`redis.ping()` is called).
    - Configure via `REDIS_URL`.
-   - Managed by this repo: `packages/happy-server/deploy/happy-redis.yaml` (StatefulSet + redis-exporter sidecar).
+   - Managed by this repo: `packages/nastech-server/deploy/happy-redis.yaml` (StatefulSet + redis-exporter sidecar).
 
 3. **S3-compatible storage**
    - Used for avatars and other uploaded assets.
@@ -56,7 +56,7 @@ Key notes:
 - The image includes FFmpeg and Python for media processing.
 
 ## Kubernetes manifests
-Example manifests live in `packages/happy-server/deploy`:
+Example manifests live in `packages/nastech-server/deploy`:
 - `handy.yaml`: Deployment + Service + ExternalSecrets for the server.
 - `happy-redis.yaml`: Redis StatefulSet + Service + ConfigMap.
 
@@ -67,14 +67,14 @@ The deployment config expects:
 
 ## Local dev helpers
 The server package includes scripts for local infrastructure:
-- `pnpm --filter happy-server db` (Postgres in Docker)
-- `pnpm --filter happy-server redis`
-- `pnpm --filter happy-server s3` + `s3:init`
+- `pnpm --filter nastech-server db` (Postgres in Docker)
+- `pnpm --filter nastech-server redis`
+- `pnpm --filter nastech-server s3` + `s3:init`
 
-Use `.env`/`.env.dev` to load local settings when running `pnpm --filter happy-server dev`.
+Use `.env`/`.env.dev` to load local settings when running `pnpm --filter nastech-server dev`.
 
 ## Implementation references
-- Entrypoint: `packages/happy-server/sources/main.ts`
+- Entrypoint: `packages/nastech-server/sources/main.ts`
 - Dockerfile: `Dockerfile.server`
-- Kubernetes manifests: `packages/happy-server/deploy`
-- Env usage: `packages/happy-server/sources` (`rg -n "process.env"`)
+- Kubernetes manifests: `packages/nastech-server/deploy`
+- Env usage: `packages/nastech-server/sources` (`rg -n "process.env"`)

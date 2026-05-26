@@ -11,29 +11,29 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY scripts ./scripts
 COPY patches ./patches
 
-RUN mkdir -p packages/happy-app packages/happy-server packages/happy-cli packages/happy-wire
+RUN mkdir -p packages/nastech-app packages/nastech-server packages/nastech-cli packages/nastech-wire
 
-COPY packages/happy-app/package.json packages/happy-app/
-COPY packages/happy-server/package.json packages/happy-server/
-COPY packages/happy-cli/package.json packages/happy-cli/
-COPY packages/happy-wire/package.json packages/happy-wire/
+COPY packages/nastech-app/package.json packages/nastech-app/
+COPY packages/nastech-server/package.json packages/nastech-server/
+COPY packages/nastech-cli/package.json packages/nastech-cli/
+COPY packages/nastech-wire/package.json packages/nastech-wire/
 
 # Workspace postinstall requirements
-COPY packages/happy-app/patches packages/happy-app/patches
-COPY packages/happy-server/prisma packages/happy-server/prisma
-COPY packages/happy-cli/scripts packages/happy-cli/scripts
-COPY packages/happy-cli/tools packages/happy-cli/tools
+COPY packages/nastech-app/patches packages/nastech-app/patches
+COPY packages/nastech-server/prisma packages/nastech-server/prisma
+COPY packages/nastech-cli/scripts packages/nastech-cli/scripts
+COPY packages/nastech-cli/tools packages/nastech-cli/tools
 
 RUN SKIP_HAPPY_WIRE_BUILD=1 pnpm install --frozen-lockfile
 
 # Stage 2: build the server
 FROM deps AS builder
 
-COPY packages/happy-wire ./packages/happy-wire
-COPY packages/happy-server ./packages/happy-server
+COPY packages/nastech-wire ./packages/nastech-wire
+COPY packages/nastech-server ./packages/nastech-server
 
-RUN pnpm --filter @slopus/happy-wire build
-RUN pnpm --filter happy-server build
+RUN pnpm --filter @nastech-ai/nastech-wire build
+RUN pnpm --filter nastech-server-self-host build
 
 # Stage 3: runtime
 FROM node:20 AS runner
@@ -49,12 +49,12 @@ ENV NODE_ENV=production
 
 # Copy necessary files from the builder stage
 COPY --from=builder /repo/node_modules /repo/node_modules
-COPY --from=builder /repo/packages/happy-wire /repo/packages/happy-wire
-COPY --from=builder /repo/packages/happy-server /repo/packages/happy-server
+COPY --from=builder /repo/packages/nastech-wire /repo/packages/nastech-wire
+COPY --from=builder /repo/packages/nastech-server /repo/packages/nastech-server
 
 # Expose the port the app will run on
 EXPOSE 3000
 
 # Command to run the application
 COPY --from=builder /repo/package.json /repo/pnpm-workspace.yaml /repo/
-CMD ["pnpm", "--filter", "happy-server", "start"]
+CMD ["pnpm", "--filter", "nastech-server-self-host", "start"]

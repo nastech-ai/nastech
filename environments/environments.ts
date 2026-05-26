@@ -17,11 +17,11 @@ const CURRENT_ENV_PATH = path.join(ENVIRONMENTS_DATA_DIR, "current.json");
 const LAB_RAT_PROJECT_TEMPLATE_DIR = path.join(ENVIRONMENTS_ROOT, "lab-rat-todo-project");
 
 // ============================================================================
-// Name generation (expanded from packages/happy-app/sources/utils/generateWorktreeName.ts)
+// Name generation (expanded from packages/nastech-app/sources/utils/generateWorktreeName.ts)
 // ============================================================================
 
 const adjectives = [
-    "clever", "happy", "swift", "bright", "calm",
+    "clever", "swift", "bright", "calm",
     "bold", "quiet", "brave", "wise", "eager",
     "gentle", "quick", "sharp", "smooth", "fresh",
     "warm", "cool", "vivid", "lucid", "nimble",
@@ -303,12 +303,12 @@ export async function createEnvironment(opts?: { noSwitch?: boolean }): Promise<
 
     console.log(`Running database migration for ${name}...`);
     const migrationEnv = buildEnvVars(envDir, serverPort, expoPort);
-    const standaloneTs = path.join(REPO_ROOT, "packages", "happy-server", "sources", "standalone.ts");
+    const standaloneTs = path.join(REPO_ROOT, "packages", "nastech-server", "sources", "standalone.ts");
     const result = spawnSync(
         "tsx",
         [standaloneTs, "migrate"],
         {
-            cwd: path.join(REPO_ROOT, "packages", "happy-server"),
+            cwd: path.join(REPO_ROOT, "packages", "nastech-server"),
             env: { ...process.env, ...migrationEnv },
             stdio: "inherit",
         }
@@ -354,7 +354,7 @@ export async function startEnvironmentServices(name: string): Promise<void> {
     const serverLogFile = path.join(envDir, "server", "stdout.log");
     console.log(`Starting server on port ${config.serverPort}...`);
     const serverPid = spawnService("pnpm", ["standalone", "serve"], {
-        cwd: path.join(REPO_ROOT, "packages", "happy-server"),
+        cwd: path.join(REPO_ROOT, "packages", "nastech-server"),
         env: mergedEnv,
         logFile: serverLogFile,
     });
@@ -375,7 +375,7 @@ export async function startEnvironmentServices(name: string): Promise<void> {
     fs.mkdirSync(path.join(envDir, "web"), { recursive: true });
     console.log(`Starting web on port ${config.expoPort}...`);
     const webPid = spawnService("pnpm", ["web", "--port", String(config.expoPort)], {
-        cwd: path.join(REPO_ROOT, "packages", "happy-app"),
+        cwd: path.join(REPO_ROOT, "packages", "nastech-app"),
         env: { ...mergedEnv, BROWSER: "none" },
         logFile: webLogFile,
     });
@@ -469,8 +469,8 @@ export async function seedEnvironment(name: string): Promise<void> {
     const daemonEnv = { ...process.env, ...envVars };
     delete daemonEnv.CLAUDECODE;
 
-    const happyBin = path.join(REPO_ROOT, "packages", "happy-cli", "bin", "happy.mjs");
-    const daemon = spawn("node", [happyBin, "daemon", "start"], {
+    const nastechBin = path.join(REPO_ROOT, "packages", "nastech-cli", "bin", "nastech.mjs");
+    const daemon = spawn("node", [nastechBin, "daemon", "start"], {
         env: daemonEnv,
         stdio: "ignore",
         detached: true,
@@ -658,7 +658,7 @@ function commandRun(service: string, serviceArgs: string[] = []) {
                 "pnpm",
                 ["standalone", "serve"],
                 {
-                    cwd: path.join(REPO_ROOT, "packages", "happy-server"),
+                    cwd: path.join(REPO_ROOT, "packages", "nastech-server"),
                     env: mergedEnv,
                     stdio: "inherit",
                 }
@@ -672,7 +672,7 @@ function commandRun(service: string, serviceArgs: string[] = []) {
                 "pnpm",
                 ["web", "--port", String(config.expoPort)],
                 {
-                    cwd: path.join(REPO_ROOT, "packages", "happy-app"),
+                    cwd: path.join(REPO_ROOT, "packages", "nastech-app"),
                     // Expo treats `--web` as "open in browser". Disable that for env-managed runs.
                     env: { ...mergedEnv, BROWSER: "none" },
                     stdio: "inherit",
@@ -687,7 +687,7 @@ function commandRun(service: string, serviceArgs: string[] = []) {
                 "pnpm",
                 ["ios"],
                 {
-                    cwd: path.join(REPO_ROOT, "packages", "happy-app"),
+                    cwd: path.join(REPO_ROOT, "packages", "nastech-app"),
                     env: mergedEnv,
                     stdio: "inherit",
                 }
@@ -701,7 +701,7 @@ function commandRun(service: string, serviceArgs: string[] = []) {
                 "pnpm",
                 ["android"],
                 {
-                    cwd: path.join(REPO_ROOT, "packages", "happy-app"),
+                    cwd: path.join(REPO_ROOT, "packages", "nastech-app"),
                     env: mergedEnv,
                     stdio: "inherit",
                 }
@@ -711,7 +711,7 @@ function commandRun(service: string, serviceArgs: string[] = []) {
         }
         case "cli": {
             console.log(`Starting CLI for environment "${envName}"...`);
-            const cliBin = path.join(REPO_ROOT, "packages", "happy-cli", "bin", "happy.mjs");
+            const cliBin = path.join(REPO_ROOT, "packages", "nastech-cli", "bin", "nastech.mjs");
             const result = spawnSync(
                 "node",
                 [cliBin, ...serviceArgs],
@@ -808,8 +808,8 @@ function buildEnvSh(name: string, envDir: string, serverPort: number, expoPort: 
     lines.push(`export PATH="${path.join(envDir, "bin")}:$PATH"`);
     lines.push("");
     lines.push("# Commands exposed by this env");
-    lines.push("# - happy");
-    lines.push("# - happy-agent");
+    lines.push("# - nastech");
+    lines.push("# - nastech-agent");
     lines.push("");
 
     return lines.join("\n");
@@ -822,11 +822,11 @@ function writeEnvCommands(envDir: string): void {
     const commands = [
         {
             name: "nastech",
-            entrypoint: path.join(REPO_ROOT, "packages", "happy-cli", "bin", "happy.mjs"),
+            entrypoint: path.join(REPO_ROOT, "packages", "nastech-cli", "bin", "nastech.mjs"),
         },
         {
             name: "nastech-agent",
-            entrypoint: path.join(REPO_ROOT, "packages", "happy-agent", "bin", "happy-agent.mjs"),
+            entrypoint: path.join(REPO_ROOT, "packages", "nastech-agent", "bin", "nastech-agent.mjs"),
         },
     ];
 
@@ -851,7 +851,7 @@ function buildAuthenticatedWebUrl(expoPort: number, token: string, secret: strin
 }
 
 function buildCliCommand(envDir: string): string {
-    return `source "${path.join(envDir, "env.sh")}" && happy`;
+    return `source "${path.join(envDir, "env.sh")}" && nastech`;
 }
 
 // ============================================================================
@@ -886,7 +886,7 @@ async function commandUp(template: Template, opts?: { noSwitch?: boolean }) {
         const envVars = buildEnvVars(envDir, config.serverPort, config.expoPort);
         const mergedEnv: Record<string, string | undefined> = { ...process.env, ...envVars };
         const buildResult = spawnSync("pnpm", ["build"], {
-            cwd: path.join(REPO_ROOT, "packages", "happy-cli"),
+            cwd: path.join(REPO_ROOT, "packages", "nastech-cli"),
             env: mergedEnv,
             stdio: "inherit",
         });
