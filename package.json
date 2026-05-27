@@ -48,7 +48,7 @@
       "sharp"
     ]
   },
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.26.1",
   "overrides": {
     "whatwg-url": "14.2.0",
     "parse-path": "7.0.3",
