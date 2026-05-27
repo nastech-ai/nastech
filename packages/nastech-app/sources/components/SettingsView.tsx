@@ -29,6 +29,7 @@ import { useProfile } from '@/sync/storage';
 import { getDisplayName, getAvatarUrl, getBio } from '@/sync/profile';
 import { Avatar } from '@/components/Avatar';
 import { t } from '@/text';
+import { useProjectQueue } from '@/hooks/useProjectQueue';
 
 type BuildConfig = {
     buildCommitSha?: unknown;
@@ -106,6 +107,7 @@ export const SettingsView = React.memo(function SettingsView() {
     const bio = getBio(profile);
 
     const { connectTerminal, connectWithUrl, isLoading } = useConnectTerminal();
+    const { pendingCount, mode: workMode } = useProjectQueue();
 
     const handleGitHub = async () => {
         await openExternalUrl('https://github.com/nastech-ai/nastech');
@@ -115,10 +117,7 @@ export const SettingsView = React.memo(function SettingsView() {
         await openExternalUrl('https://github.com/nastech-ai/nastech/issues');
     };
 
-
-    // Use the multi-click hook for version clicks
     const handleVersionClick = useMultiClick(() => {
-        // Toggle dev mode
         const newDevMode = !devModeEnabled;
         setDevModeEnabled(newDevMode);
         Modal.alert(
@@ -130,17 +129,14 @@ export const SettingsView = React.memo(function SettingsView() {
         resetTimeout: 2000
     });
 
-    // Connection status
     const isGitHubConnected = !!profile.github;
     const isAnthropicConnected = profile.connectedServices?.includes('anthropic') || false;
 
-    // GitHub connection
     const [connectingGitHub, connectGitHub] = useNasTechAction(async () => {
         const params = await getGitHubOAuthParams(auth.credentials!);
         await openExternalUrl(params.url);
     });
 
-    // GitHub disconnection
     const [disconnectingGitHub, handleDisconnectGitHub] = useNasTechAction(async () => {
         const confirmed = await Modal.confirm(
             t('modals.disconnectGithub'),
@@ -152,12 +148,10 @@ export const SettingsView = React.memo(function SettingsView() {
         }
     });
 
-    // Anthropic connection
     const [connectingAnthropic, connectAnthropic] = useNasTechAction(async () => {
         router.push('/settings/connect/claude');
     });
 
-    // Anthropic disconnection
     const [disconnectingAnthropic, handleDisconnectAnthropic] = useNasTechAction(async () => {
         const confirmed = await Modal.confirm(
             t('modals.disconnectService', { service: 'Claude' }),
@@ -170,15 +164,12 @@ export const SettingsView = React.memo(function SettingsView() {
         }
     });
 
-
     return (
-
         <ItemList style={{ paddingTop: 0 }}>
             {/* App Info Header */}
             <View style={{ maxWidth: layout.maxWidth, alignSelf: 'center', width: '100%' }}>
                 <View style={{ alignItems: 'center', paddingVertical: 24, backgroundColor: theme.colors.surface, marginTop: 16, borderRadius: 12, marginHorizontal: 16 }}>
                     {profile.firstName ? (
-                        // Profile view: Avatar + name + version
                         <>
                             <View style={{ marginBottom: 12 }}>
                                 <Avatar
@@ -198,7 +189,6 @@ export const SettingsView = React.memo(function SettingsView() {
                             )}
                         </>
                     ) : (
-                        // Logo view: Original logo + version
                         <>
                             <Image
                                 source={theme.dark ? require('@/assets/images/logotype-light.png') : require('@/assets/images/logotype-dark.png')}
@@ -241,13 +231,26 @@ export const SettingsView = React.memo(function SettingsView() {
                 </ItemGroup>
             )}
 
-            {/* Custom AI API */}
-            <ItemGroup>
+            {/* AI APIs + Work Queue */}
+            <ItemGroup title="Automation">
                 <Item
-                    title="Custom AI API"
-                    subtitle="Configure OpenAI, Anthropic, Groq, Ollama, or any custom endpoint"
+                    title="AI API Settings"
+                    subtitle="Anthropic, OpenAI, Gemini, DeepSeek, xAI, Mistral & more"
                     icon={<Ionicons name="hardware-chip-outline" size={29} color="#5856D6" />}
                     onPress={() => router.push('/settings/ai-api' as any)}
+                />
+                <Item
+                    title="Work Queue"
+                    subtitle={
+                        workMode === 'queue'
+                            ? pendingCount > 0
+                                ? `Queue mode on — ${pendingCount} task${pendingCount !== 1 ? 's' : ''} waiting`
+                                : 'Queue mode on — auto-dispatches when PC comes online'
+                            : 'Queue tasks to run when your PC comes online'
+                    }
+                    icon={<Ionicons name="layers-outline" size={29} color="#FF9500" />}
+                    onPress={() => router.push('/settings/queue' as any)}
+                    detail={pendingCount > 0 ? String(pendingCount) : undefined}
                 />
             </ItemGroup>
 
@@ -288,38 +291,25 @@ export const SettingsView = React.memo(function SettingsView() {
                 />
             </ItemGroup>
 
-            {/* Social */}
-            {/* <ItemGroup title={t('settings.social')}>
-                <Item
-                    title={t('navigation.friends')}
-                    subtitle={t('friends.manageFriends')}
-                    icon={<Ionicons name="people-outline" size={29} color="#007AFF" />}
-                    onPress={() => router.push('/friends')}
-                />
-            </ItemGroup> */}
-
-            {/* Machines (sorted: online first, then last seen desc) */}
+            {/* Machines */}
             {allMachinesWithOffline.length > 0 && (
                 <ItemGroup title={t('settings.machines')}>
                     {visibleMachines.map((machine) => {
                         const isOnline = isMachineOnline(machine);
                         const host = machine.metadata?.host || 'Unknown';
-                        const displayName = machine.metadata?.displayName;
+                        const machineName = machine.metadata?.displayName;
                         const platform = machine.metadata?.platform || '';
-
-                        // Use displayName if available, otherwise use host
-                        const title = displayName || host;
-
-                        // Build subtitle: show hostname if different from title, plus platform and status
+                        const title = machineName || host;
                         let subtitle = '';
-                        if (displayName && displayName !== host) {
+                        if (machineName && machineName !== host) {
                             subtitle = host;
                         }
                         if (platform) {
                             subtitle = subtitle ? `${subtitle} • ${platform}` : platform;
                         }
-                        subtitle = subtitle ? `${subtitle} • ${isOnline ? t('status.online') : t('status.offline')}` : (isOnline ? t('status.online') : t('status.offline'));
-
+                        subtitle = subtitle
+                            ? `${subtitle} • ${isOnline ? t('status.online') : t('status.offline')}`
+                            : (isOnline ? t('status.online') : t('status.offline'));
                         return (
                             <Item
                                 key={machine.id}
@@ -343,10 +333,7 @@ export const SettingsView = React.memo(function SettingsView() {
                                 : t('settings.showOfflineMachines', { count: offlineMachineCount })}
                             onPress={() => setShowOfflineMachines(v => !v)}
                             showChevron={false}
-                            titleStyle={{
-                                textAlign: 'center',
-                                color: theme.colors.textLink,
-                            }}
+                            titleStyle={{ textAlign: 'center', color: theme.colors.textLink }}
                         />
                     )}
                 </ItemGroup>
@@ -374,7 +361,7 @@ export const SettingsView = React.memo(function SettingsView() {
                 />
                 <Item
                     title="Agent Defaults"
-                    subtitle="Default model, effort, and permissions"
+                    subtitle="Default model, effort, and permissions per agent"
                     icon={<Ionicons name="options-outline" size={29} color="#5AC8FA" />}
                     onPress={() => router.push('/settings/agents' as any)}
                 />
@@ -454,7 +441,6 @@ export const SettingsView = React.memo(function SettingsView() {
                     showChevron={false}
                 />
             </ItemGroup>
-
         </ItemList>
     );
 });
