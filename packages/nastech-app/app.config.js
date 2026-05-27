@@ -206,7 +206,7 @@ export default {
             ]
         ],
         updates: {
-            url: "https://u.expo.dev/4558dd3d-cd5a-47cd-bad9-e591a241cc06",
+            url: "https://u.expo.dev/0f355439-67b2-4ee7-b4d4-40ba4f884bc7",
             requestHeaders: {
                 "expo-channel-name": "production"
             }
@@ -219,7 +219,7 @@ export default {
                 root: "./sources/app"
             },
             eas: {
-                projectId: "4558dd3d-cd5a-47cd-bad9-e591a241cc06"
+                projectId: "0f355439-67b2-4ee7-b4d4-40ba4f884bc7"
             },
             app: {
                 postHogKey: process.env.EXPO_PUBLIC_POSTHOG_API_KEY,
@@ -229,6 +229,6 @@ export default {
                 buildCommitTimestamp: buildMetadata.commitTimestamp,
             }
         },
-        owner: "nastech"
+        owner: "naswifcohen"
     }
 };
