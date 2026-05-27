@@ -6,9 +6,9 @@ import { decodeBase64, decryptLegacy, decryptWithDataKey } from '@/api/encryptio
 import type { Metadata } from '@/api/types';
 import { configuration } from '@/configuration';
 import {
-    getLocalHappyAgentCredentialPath,
-    readLocalHappyAgentCredentials,
-    type LocalHappyAgentCredentials,
+    getLocalNasTechAgentCredentialPath,
+    readLocalNasTechAgentCredentials,
+    type LocalNasTechAgentCredentials,
 } from './localNasTechAgentAuth';
 
 const ResumableMetadataSchema = z.object({
@@ -40,7 +40,7 @@ export type ResumableNasTechSession = {
     metadata: Metadata;
 };
 
-export type ReconnectableHappySession = ResumableNasTechSession & {
+export type ReconnectableNasTechSession = ResumableNasTechSession & {
     seq: number;
     metadataVersion: number;
     agentStateVersion: number;
@@ -78,8 +78,8 @@ function decryptBoxBundle(bundle: Uint8Array, recipientSecretKey: Uint8Array): U
 }
 
 function readAgentCredentials() {
-    const credentialPath = getLocalHappyAgentCredentialPath();
-    const credentials = readLocalHappyAgentCredentials();
+    const credentialPath = getLocalNasTechAgentCredentialPath();
+    const credentials = readLocalNasTechAgentCredentials();
     if (!credentials) {
         throw new Error(
             `Cannot resume historical NasTech sessions without ${credentialPath}. Run \`nastech-agent auth login\` in this environment first.`,
@@ -88,7 +88,7 @@ function readAgentCredentials() {
     return credentials;
 }
 
-function resolveSessionEncryption(session: RawSession, credentials: LocalHappyAgentCredentials): RecordEncryption {
+function resolveSessionEncryption(session: RawSession, credentials: LocalNasTechAgentCredentials): RecordEncryption {
     if (session.dataEncryptionKey) {
         const encrypted = decodeBase64(session.dataEncryptionKey);
         const sessionKey = decryptBoxBundle(encrypted.slice(1), credentials.contentKeyPair.secretKey);
@@ -107,7 +107,7 @@ function resolveSessionEncryption(session: RawSession, credentials: LocalHappyAg
     };
 }
 
-function decryptSessionMetadata(session: RawSession, credentials: LocalHappyAgentCredentials): Metadata {
+function decryptSessionMetadata(session: RawSession, credentials: LocalNasTechAgentCredentials): Metadata {
     const encryption = resolveSessionEncryption(session, credentials);
     const encryptedMetadata = decodeBase64(session.metadata);
     const metadata = encryption.variant === 'dataKey'
@@ -125,7 +125,7 @@ function decryptSessionMetadata(session: RawSession, credentials: LocalHappyAgen
     }
 }
 
-async function fetchSessions(credentials: LocalHappyAgentCredentials): Promise<RawSession[]> {
+async function fetchSessions(credentials: LocalNasTechAgentCredentials): Promise<RawSession[]> {
     try {
         const response = await axios.get(`${configuration.serverUrl}/v1/sessions`, {
             headers: {
@@ -156,7 +156,7 @@ export async function resolveNasTechSession(sessionId: string): Promise<Resumabl
     };
 }
 
-export async function resolveReconnectableSession(sessionId: string): Promise<ReconnectableHappySession> {
+export async function resolveReconnectableSession(sessionId: string): Promise<ReconnectableNasTechSession> {
     const credentials = readAgentCredentials();
     const sessions = await fetchSessions(credentials);
     const matched = resolveSessionRecordByPrefix(sessions, sessionId);

@@ -9,7 +9,7 @@ import chalk from 'chalk'
 import { configuration } from '@/configuration'
 import { readSettings, readCredentials } from '@/persistence'
 import { checkIfDaemonRunningAndCleanupStaleState } from '@/daemon/controlClient'
-import { findAllHappyProcesses } from '@/daemon/doctor'
+import { findAllNasTechProcesses } from '@/daemon/doctor'
 import { readDaemonState } from '@/persistence'
 import { existsSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
@@ -31,7 +31,7 @@ export function getEnvironmentInfo(): Record<string, any> {
         DEBUG: process.env.DEBUG,
         workingDirectory: process.cwd(),
         processArgv: process.argv,
-        nasTechDir: configuration?.happyHomeDir,
+        nasTechDir: configuration?.nastechHomeDir,
         serverUrl: configuration?.serverUrl,
         logsDir: configuration?.logsDir,
         processPid: process.pid,
@@ -107,7 +107,7 @@ export async function runDoctorCommand(): Promise<void> {
 
     // All NasTech processes
     try {
-        const allProcesses = await findAllHappyProcesses();
+        const allProcesses = await findAllNasTechProcesses();
         if (allProcesses.length > 0) {
             console.log(chalk.bold('🔍 All NasTech CLI Processes'));
 
@@ -234,7 +234,7 @@ export async function runDoctorCommand(): Promise<void> {
 
     // Configuration
     console.log(chalk.bold('\n⚙️  Configuration'));
-    console.log(`NasTech Home: ${chalk.blue(configuration.happyHomeDir)}`);
+    console.log(`NasTech Home: ${chalk.blue(configuration.nastechHomeDir)}`);
     console.log(`Server URL: ${chalk.blue(configuration.serverUrl)}`);
     console.log(`Logs Dir: ${chalk.blue(configuration.logsDir)}`);
 

@@ -68,6 +68,6 @@ NasTech is an open-source mobile app that lets developers control AI coding agen
 
 - GitHub: https://github.com/nastech-ai/nastech
 - Website: https://ba.nastech.workers.dev
-- iOS App: https://apps.apple.com/us/app/happy-claude-code-client/id6748571505
-- Android App: https://play.google.com/store/apps/details?id=com.ex3ndr.happy
+- iOS App: https://apps.apple.com/us/app/nastech-claude-code-client/id6748571505
+- Android App: https://play.google.com/store/apps/details?id=com.ex3ndr.nastech
 - Web App: https://ba.nastech.workers.dev/

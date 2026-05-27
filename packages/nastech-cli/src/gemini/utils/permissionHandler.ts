@@ -61,7 +61,7 @@ export class GeminiPermissionHandler extends BasePermissionHandler {
         // legitimate naming variant explicitly (bare, MCP-qualified, etc).
         const alwaysAutoApproveNames: ReadonlySet<string> = new Set([
             'change_title',
-            'happy__change_title',
+            'nastech__change_title',
             'mcp__nastech__change_title',
             'GeminiReasoning',
             'CodexReasoning',

@@ -27,7 +27,7 @@ function parseClientLabels(raw: string | undefined | null): ClientLabels {
  * Spread into any metric .inc() / .observe() call.
  */
 export function getMetricsLabelsFromSocket(socket: Socket): ClientLabels {
-    return parseClientLabels(socket.data.happyClient as string);
+    return parseClientLabels(socket.data.nastechClient as string);
 }
 
 /**

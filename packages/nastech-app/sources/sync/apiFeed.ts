@@ -1,7 +1,7 @@
 import { AuthCredentials } from '@/auth/tokenStorage';
 import { backoff } from '@/utils/time';
 import { getServerUrl } from './serverConfig';
-import { getHappyClientId } from './apiSocket';
+import { getNasTechClientId } from './apiSocket';
 import { FeedResponse, FeedResponseSchema, FeedItem } from './feedTypes';
 import { log } from '@/log';
 
@@ -31,7 +31,7 @@ export async function fetchFeed(
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
 

@@ -55,8 +55,8 @@ vi.mock('@/resume/localNasTechAgentAuth', () => ({
     detectResumeSupport: vi.fn(() => ({
         rpcAvailable: false,
         requiresSameMachine: false,
-        requiresHappyAgentAuth: false,
-        happyAgentAuthenticated: false
+        requiresNasTechAgentAuth: false,
+        nastechAgentAuthenticated: false
     }))
 }));
 
@@ -73,10 +73,10 @@ function makeMachine(): Machine {
         metadata: {
             host: 'localhost',
             platform: 'darwin',
-            happyCliVersion: 'test',
+            nastechCliVersion: 'test',
             homeDir: '/home/user',
-            happyHomeDir: '/home/user/.nastech',
-            happyLibDir: '/home/user/.nastech/lib'
+            nastechHomeDir: '/home/user/.nastech',
+            nastechLibDir: '/home/user/.nastech/lib'
         },
         metadataVersion: 0,
         daemonState: null,

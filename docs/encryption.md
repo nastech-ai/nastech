@@ -382,9 +382,9 @@ Messages are encrypted as `MessageContent` and then base64 encoded:
   "path": "...",
   "host": "...",
   "homeDir": "...",
-  "happyHomeDir": "...",
-  "happyLibDir": "...",
-  "happyToolsDir": "...",
+  "nastechHomeDir": "...",
+  "nastechLibDir": "...",
+  "nastechToolsDir": "...",
   "version": "...",
   "name": "...",
   "os": "...",
@@ -432,10 +432,10 @@ Messages are encrypted as `MessageContent` and then base64 encoded:
 {
   "host": "...",
   "platform": "...",
-  "happyCliVersion": "...",
+  "nastechCliVersion": "...",
   "homeDir": "...",
-  "happyHomeDir": "...",
-  "happyLibDir": "..."
+  "nastechHomeDir": "...",
+  "nastechLibDir": "..."
 }
 ```
 

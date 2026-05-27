@@ -11,7 +11,7 @@ import spawn from 'cross-spawn';
 /**
  * Find all NasTech CLI processes (including current process)
  */
-export async function findAllHappyProcesses(): Promise<Array<{ pid: number, command: string, type: string }>> {
+export async function findAllNasTechProcesses(): Promise<Array<{ pid: number, command: string, type: string }>> {
   try {
     const processes = await psList();
     const allProcesses: Array<{ pid: number, command: string, type: string }> = [];
@@ -21,14 +21,14 @@ export async function findAllHappyProcesses(): Promise<Array<{ pid: number, comm
       const name = proc.name || '';
       
       // Check if it's a NasTech process
-      const isHappy = name.includes('nastech') || 
+      const isNasTech = name.includes('nastech') || 
                       name === 'node' && (cmd.includes('nastech') || cmd.includes('dist/index.mjs')) ||
                       cmd.includes('nastech.mjs') ||
                       cmd.includes('nastech-coder') || // legacy npm package name
                       cmd.includes('/nastech/') ||
                       (cmd.includes('tsx') && cmd.includes('src/index.ts') && cmd.includes('nastech'));
       
-      if (!isHappy) continue;
+      if (!isNasTech) continue;
 
       // Classify process type
       let type = 'unknown';
@@ -60,8 +60,8 @@ export async function findAllHappyProcesses(): Promise<Array<{ pid: number, comm
 /**
  * Find all runaway NasTech CLI processes that should be killed
  */
-export async function findRunawayHappyProcesses(): Promise<Array<{ pid: number, command: string }>> {
-  const allProcesses = await findAllHappyProcesses();
+export async function findRunawayNasTechProcesses(): Promise<Array<{ pid: number, command: string }>> {
+  const allProcesses = await findAllNasTechProcesses();
   
   // Filter to just runaway processes (excluding current process)
   return allProcesses
@@ -81,8 +81,8 @@ export async function findRunawayHappyProcesses(): Promise<Array<{ pid: number, 
 /**
  * Kill all runaway NasTech CLI processes
  */
-export async function killRunawayHappyProcesses(): Promise<{ killed: number, errors: Array<{ pid: number, error: string }> }> {
-  const runawayProcesses = await findRunawayHappyProcesses();
+export async function killRunawayNasTechProcesses(): Promise<{ killed: number, errors: Array<{ pid: number, error: string }> }> {
+  const runawayProcesses = await findRunawayNasTechProcesses();
   const errors: Array<{ pid: number, error: string }> = [];
   let killed = 0;
   

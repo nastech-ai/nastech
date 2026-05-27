@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { Modal } from '@/modal';
 import { t } from '@/text';
 import { useSession } from '@/sync/storage';
-import { useHappyAction } from '@/hooks/useHappyAction';
+import { useNasTechAction } from '@/hooks/useNasTechAction';
 import { forkAndSpawn, claudeListRewindPoints, type ForkSource, type ClaudeRewindPoint } from '@/sync/ops';
 
 export interface DuplicateSheetProps {
@@ -82,7 +82,7 @@ export const DuplicateSheet = React.memo(function DuplicateSheet(props: Duplicat
         ? points.find((p) => p.uuid === selectedUuid) ?? null
         : null;
 
-    const [loading, doDuplicate] = useHappyAction(async () => {
+    const [loading, doDuplicate] = useNasTechAction(async () => {
         if (!canFork || !machineId || !directory || !claudeSessionId) {
             Modal.alert(t('common.error'), t('session.forkErrorMissingMetadata'));
             return;

@@ -11,7 +11,7 @@ const repoRoot = resolve(packageDir, '..', '..');
 const environmentsDir = join(repoRoot, 'environments', 'data', 'envs');
 const currentEnvironmentPath = join(repoRoot, 'environments', 'data', 'current.json');
 const binPath = resolve(packageDir, 'bin', 'nastech-agent.mjs');
-const keepIntegrationEnv = ['1', 'true', 'yes'].includes((process.env.HAPPY_AGENT_KEEP_ENV ?? '').toLowerCase());
+const keepIntegrationEnv = ['1', 'true', 'yes'].includes((process.env.NASTECH_AGENT_KEEP_ENV ?? '').toLowerCase());
 
 type EnvironmentConfig = {
     name: string;
@@ -309,7 +309,7 @@ async function runAgentAuthLogin(env: NodeJS.ProcessEnv, approval: { serverUrl: 
     });
 }
 
-async function listDaemonSessions(httpPort: number): Promise<Array<{ happySessionId: string; pid: number; startedBy: string }>> {
+async function listDaemonSessions(httpPort: number): Promise<Array<{ nastechSessionId: string; pid: number; startedBy: string }>> {
     const response = await fetch(`http://127.0.0.1:${httpPort}/list`, {
         method: 'POST',
         headers: {
@@ -320,7 +320,7 @@ async function listDaemonSessions(httpPort: number): Promise<Array<{ happySessio
     if (!response.ok) {
         throw new Error(`Daemon session list failed: ${response.status}`);
     }
-    const parsed = await response.json() as { children: Array<{ happySessionId: string; pid: number; startedBy: string }> };
+    const parsed = await response.json() as { children: Array<{ nastechSessionId: string; pid: number; startedBy: string }> };
     return parsed.children;
 }
 
@@ -435,7 +435,7 @@ describe('nastech-agent integration', { timeout: 180_000 }, () => {
                 homeDir?: string;
                 resumeSupport?: {
                     rpcAvailable?: boolean;
-                    happyAgentAuthenticated?: boolean;
+                    nastechAgentAuthenticated?: boolean;
                 };
             };
         }>;
@@ -451,13 +451,13 @@ describe('nastech-agent integration', { timeout: 180_000 }, () => {
                 metadata?: {
                     resumeSupport?: {
                         rpcAvailable?: boolean;
-                        happyAgentAuthenticated?: boolean;
+                        nastechAgentAuthenticated?: boolean;
                     };
                 };
             }>;
             const refreshedMachine = refreshedMachines.find(item => item.id === machine.id);
             return refreshedMachine?.metadata?.resumeSupport?.rpcAvailable === true
-                && refreshedMachine.metadata.resumeSupport.happyAgentAuthenticated === true;
+                && refreshedMachine.metadata.resumeSupport.nastechAgentAuthenticated === true;
         }, 20_000, `machine ${machine.id} to advertise resume RPC support`);
 
         const spawnResult = JSON.parse(
@@ -502,7 +502,7 @@ describe('nastech-agent integration', { timeout: 180_000 }, () => {
 
         await waitFor(async () => {
             const sessions = await listDaemonSessions(daemonState!.httpPort!);
-            return sessions.some(session => session.happySessionId === sessionId);
+            return sessions.some(session => session.nastechSessionId === sessionId);
         }, 20_000, 'spawned session to be tracked by daemon');
     });
 

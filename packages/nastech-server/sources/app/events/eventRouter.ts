@@ -12,14 +12,14 @@ export interface SessionScopedConnection {
     socket: Socket;
     userId: string;
     sessionId: string;
-    happyClient?: string;
+    nastechClient?: string;
 }
 
 export interface UserScopedConnection {
     connectionType: 'user-scoped';
     socket: Socket;
     userId: string;
-    happyClient?: string;
+    nastechClient?: string;
 }
 
 export interface MachineScopedConnection {
@@ -27,7 +27,7 @@ export interface MachineScopedConnection {
     socket: Socket;
     userId: string;
     machineId: string;
-    happyClient?: string;
+    nastechClient?: string;
 }
 
 export type ClientConnection = SessionScopedConnection | UserScopedConnection | MachineScopedConnection;

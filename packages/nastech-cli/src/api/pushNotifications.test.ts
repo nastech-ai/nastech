@@ -11,9 +11,9 @@ function makeMetadata(overrides: Partial<Metadata> = {}): Metadata {
         path: '/Users/test/projects/nastech',
         host: 'test-host',
         homeDir: '/Users/test',
-        happyHomeDir: '/Users/test/.nastech',
-        happyLibDir: '/Users/test/.nastech/lib',
-        happyToolsDir: '/Users/test/.nastech/tools',
+        nastechHomeDir: '/Users/test/.nastech',
+        nastechLibDir: '/Users/test/.nastech/lib',
+        nastechToolsDir: '/Users/test/.nastech/tools',
         ...overrides,
     };
 }

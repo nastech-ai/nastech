@@ -83,7 +83,7 @@ vi.mock('@/api/api', () => ({
 }));
 
 vi.mock('@/daemon/run', () => ({
-  initialMachineMetadata: { host: 'host', platform: 'darwin', happyCliVersion: 'test', homeDir: '/tmp', happyHomeDir: '/tmp/.nastech', happyLibDir: '/tmp/nastech' },
+  initialMachineMetadata: { host: 'host', platform: 'darwin', nastechCliVersion: 'test', homeDir: '/tmp', nastechHomeDir: '/tmp/.nastech', nastechLibDir: '/tmp/nastech' },
 }));
 
 vi.mock('@/utils/setupOfflineReconnection', () => ({
@@ -496,9 +496,9 @@ describe('runAcp', () => {
       path: '/repo',
       host: 'host',
       homeDir: '/home/user',
-      happyHomeDir: '/home/user/.nastech',
-      happyLibDir: '/repo/.nastech/lib',
-      happyToolsDir: '/repo/.nastech/tools',
+      nastechHomeDir: '/home/user/.nastech',
+      nastechLibDir: '/repo/.nastech/lib',
+      nastechToolsDir: '/repo/.nastech/tools',
     };
     const appliedMetadata = metadataHandlers.map((handler) => handler(baseMetadata));
 

@@ -99,7 +99,7 @@ export function PluginDetailPage() {
                 <section className="plugin-detail__section">
                     <h3 className="plugins-section__heading">Authentication</h3>
                     {plugin.id === 'nastech' ? (
-                        <HappyAuthPanel />
+                        <NasTechAuthPanel />
                     ) : auth.status === 'connected' ? (
                         <div className="plugin-detail__row">
                             <span className="plugin-card__status plugin-card__status--good">
@@ -191,7 +191,7 @@ export function PluginDetailPage() {
     )
 }
 
-function HappyAuthPanel() {
+function NasTechAuthPanel() {
     const state = useNasTechState()
     const [busy, setBusy] = useState<string | null>(null)
     const [secretKey, setSecretKey] = useState('')

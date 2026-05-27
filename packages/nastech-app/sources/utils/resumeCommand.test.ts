@@ -47,7 +47,7 @@ describe('buildResumeCommandBlock', () => {
                 `cd '/tmp/project'`,
                 'nastech claude --resume 93a9705e-bc6a-406d-8dce-8acc014dedbd',
             ],
-            copyText: `cd '/tmp/project'\nhappy claude --resume 93a9705e-bc6a-406d-8dce-8acc014dedbd`,
+            copyText: `cd '/tmp/project'\nnastech claude --resume 93a9705e-bc6a-406d-8dce-8acc014dedbd`,
         });
     });
 
@@ -72,7 +72,7 @@ describe('buildResumeCommandBlock', () => {
                 `Set-Location -LiteralPath 'C:\\Users\\test\\project'`,
                 'nastech claude --resume 93a9705e-bc6a-406d-8dce-8acc014dedbd',
             ],
-            copyText: `Set-Location -LiteralPath 'C:\\Users\\test\\project'\nhappy claude --resume 93a9705e-bc6a-406d-8dce-8acc014dedbd`,
+            copyText: `Set-Location -LiteralPath 'C:\\Users\\test\\project'\nnastech claude --resume 93a9705e-bc6a-406d-8dce-8acc014dedbd`,
         });
     });
 });

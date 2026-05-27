@@ -12,7 +12,7 @@ const AgentCredentialsSchema = z.object({
     secret: z.string().min(1),
 });
 
-export type LocalHappyAgentCredentials = {
+export type LocalNasTechAgentCredentials = {
     token: string;
     secret: Uint8Array;
     contentKeyPair: {
@@ -24,8 +24,8 @@ export type LocalHappyAgentCredentials = {
 export type ResumeSupport = {
     rpcAvailable: boolean;
     requiresSameMachine: true;
-    requiresHappyAgentAuth: true;
-    happyAgentAuthenticated: boolean;
+    requiresNasTechAgentAuth: true;
+    nastechAgentAuthenticated: boolean;
     detectedAt: number;
 };
 
@@ -65,14 +65,14 @@ function deriveContentKeyPair(secret: Uint8Array): { publicKey: Uint8Array; secr
     };
 }
 
-export function getLocalHappyAgentCredentialPath(happyHomeDir: string = configuration.happyHomeDir): string {
-    return join(happyHomeDir, 'agent.key');
+export function getLocalNasTechAgentCredentialPath(nastechHomeDir: string = configuration.nastechHomeDir): string {
+    return join(nastechHomeDir, 'agent.key');
 }
 
-export function readLocalHappyAgentCredentials(
-    happyHomeDir: string = configuration.happyHomeDir,
-): LocalHappyAgentCredentials | null {
-    const credentialPath = getLocalHappyAgentCredentialPath(happyHomeDir);
+export function readLocalNasTechAgentCredentials(
+    nastechHomeDir: string = configuration.nastechHomeDir,
+): LocalNasTechAgentCredentials | null {
+    const credentialPath = getLocalNasTechAgentCredentialPath(nastechHomeDir);
     if (!existsSync(credentialPath)) {
         return null;
     }
@@ -90,17 +90,17 @@ export function readLocalHappyAgentCredentials(
     }
 }
 
-export function hasLocalHappyAgentAuth(happyHomeDir: string = configuration.happyHomeDir): boolean {
-    return readLocalHappyAgentCredentials(happyHomeDir) !== null;
+export function hasLocalNasTechAgentAuth(nastechHomeDir: string = configuration.nastechHomeDir): boolean {
+    return readLocalNasTechAgentCredentials(nastechHomeDir) !== null;
 }
 
-export function detectResumeSupport(happyHomeDir: string = configuration.happyHomeDir): ResumeSupport {
-    const happyAgentAuthenticated = hasLocalHappyAgentAuth(happyHomeDir);
+export function detectResumeSupport(nastechHomeDir: string = configuration.nastechHomeDir): ResumeSupport {
+    const nastechAgentAuthenticated = hasLocalNasTechAgentAuth(nastechHomeDir);
     return {
-        rpcAvailable: happyAgentAuthenticated,
+        rpcAvailable: nastechAgentAuthenticated,
         requiresSameMachine: true,
-        requiresHappyAgentAuth: true,
-        happyAgentAuthenticated,
+        requiresNasTechAgentAuth: true,
+        nastechAgentAuthenticated,
         detectedAt: Date.now(),
     };
 }

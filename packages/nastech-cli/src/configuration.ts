@@ -16,7 +16,7 @@ class Configuration {
   public readonly isDaemonProcess: boolean
 
   // Directories and paths (from persistence)
-  public readonly happyHomeDir: string
+  public readonly nastechHomeDir: string
   public readonly logsDir: string
   public readonly settingsFile: string
   public readonly privateKeyFile: string
@@ -37,17 +37,17 @@ class Configuration {
     if (process.env.NASTECH_HOME_DIR) {
       // Expand ~ to home directory if present
       const expandedPath = process.env.NASTECH_HOME_DIR.replace(/^~/, homedir())
-      this.happyHomeDir = expandedPath
+      this.nastechHomeDir = expandedPath
     } else {
-      this.happyHomeDir = join(homedir(), '.nastech')
+      this.nastechHomeDir = join(homedir(), '.nastech')
     }
 
-    this.logsDir = join(this.happyHomeDir, 'logs')
-    this.settingsFile = join(this.happyHomeDir, 'settings.json')
-    this.privateKeyFile = join(this.happyHomeDir, 'access.key')
-    this.daemonStateFile = join(this.happyHomeDir, 'daemon.state.json')
-    this.daemonLockFile = join(this.happyHomeDir, 'daemon.state.json.lock')
-    this.sessionsFile = join(this.happyHomeDir, 'sessions.json')
+    this.logsDir = join(this.nastechHomeDir, 'logs')
+    this.settingsFile = join(this.nastechHomeDir, 'settings.json')
+    this.privateKeyFile = join(this.nastechHomeDir, 'access.key')
+    this.daemonStateFile = join(this.nastechHomeDir, 'daemon.state.json')
+    this.daemonLockFile = join(this.nastechHomeDir, 'daemon.state.json.lock')
+    this.sessionsFile = join(this.nastechHomeDir, 'sessions.json')
 
     // URL precedence (both): NASTECH_*_URL env > settings.<key> > default.
     // Settings are read sync here (avoid circular import with persistence.ts).
@@ -70,11 +70,11 @@ class Configuration {
     // Visual indicator on CLI startup (only if not daemon process to avoid log clutter)
     const variant = process.env.NASTECH_VARIANT || 'stable'
     if (!this.isDaemonProcess && variant === 'dev') {
-      console.log('\x1b[33m🔧 DEV MODE\x1b[0m - Data: ' + this.happyHomeDir)
+      console.log('\x1b[33m🔧 DEV MODE\x1b[0m - Data: ' + this.nastechHomeDir)
     }
 
-    if (!existsSync(this.happyHomeDir)) {
-      mkdirSync(this.happyHomeDir, { recursive: true })
+    if (!existsSync(this.nastechHomeDir)) {
+      mkdirSync(this.nastechHomeDir, { recursive: true })
     }
     // Ensure directories exist
     if (!existsSync(this.logsDir)) {

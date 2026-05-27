@@ -19,10 +19,10 @@ import { t } from '@/text';
 import { isVersionSupported, MINIMUM_CLI_VERSION } from '@/utils/versionUtils';
 import { CodeView } from '@/components/CodeView';
 import { Session } from '@/sync/storageTypes';
-import { useHappyAction } from '@/hooks/useHappyAction';
+import { useNasTechAction } from '@/hooks/useNasTechAction';
 import { useSessionQuickActions } from '@/hooks/useSessionQuickActions';
 import { copySessionMetadataToClipboard, copySessionMetadataAndLogsToClipboard } from '@/utils/copySessionMetadataToClipboard';
-import { HappyError } from '@/utils/errors';
+import { NasTechError } from '@/utils/errors';
 
 // Animated status dot component
 function StatusDot({ color, isPulsing, size = 8 }: { color: string; isPulsing?: boolean; size?: number }) {
@@ -146,7 +146,7 @@ function SessionInfoContent({ session }: { session: Session }) {
         if (!session) return;
         try {
             await Clipboard.setStringAsync(session.id);
-            Modal.alert(t('common.success'), t('sessionInfo.happySessionIdCopied'));
+            Modal.alert(t('common.success'), t('sessionInfo.nastechSessionIdCopied'));
         } catch (error) {
             Modal.alert(t('common.error'), t('sessionInfo.failedToCopySessionId'));
         }
@@ -160,8 +160,8 @@ function SessionInfoContent({ session }: { session: Session }) {
         void copySessionMetadataAndLogsToClipboard(session);
     }, [session]);
 
-    // Use HappyAction for archiving - it handles errors automatically
-    const [archivingSession, performArchive] = useHappyAction(async () => {
+    // Use NasTechAction for archiving - it handles errors automatically
+    const [archivingSession, performArchive] = useNasTechAction(async () => {
         // Prompt for worktree cleanup before killing (needs an active machine connection)
         await maybeCleanupWorktree(session.id, session.metadata?.path, session.metadata?.machineId);
 
@@ -179,8 +179,8 @@ function SessionInfoContent({ session }: { session: Session }) {
         performArchive();
     }, [performArchive]);
 
-    // Use HappyAction for deletion - kills session first if needed, then deletes
-    const [deletingSession, performDelete] = useHappyAction(async () => {
+    // Use NasTechAction for deletion - kills session first if needed, then deletes
+    const [deletingSession, performDelete] = useNasTechAction(async () => {
         // Prompt for worktree cleanup before killing (needs an active machine connection)
         await maybeCleanupWorktree(session.id, session.metadata?.path, session.metadata?.machineId);
 
@@ -195,7 +195,7 @@ function SessionInfoContent({ session }: { session: Session }) {
 
         const result = await sessionDelete(session.id);
         if (!result.success) {
-            throw new HappyError(result.message || t('sessionInfo.failedToDeleteSession'), false);
+            throw new NasTechError(result.message || t('sessionInfo.failedToDeleteSession'), false);
         }
     });
 
@@ -275,7 +275,7 @@ function SessionInfoContent({ session }: { session: Session }) {
                 {/* Session Details */}
                 <ItemGroup>
                     <Item
-                        title={t('sessionInfo.happySessionId')}
+                        title={t('sessionInfo.nastechSessionId')}
                         subtitle={`${session.id.substring(0, 8)}...${session.id.substring(session.id.length - 8)}`}
                         icon={<Ionicons name="finger-print-outline" size={29} color="#007AFF" />}
                         onPress={handleCopySessionId}
@@ -473,10 +473,10 @@ function SessionInfoContent({ session }: { session: Session }) {
                                 showChevron={false}
                             />
                         )}
-                        {session.metadata.happyHomeDir && (
+                        {session.metadata.nastechHomeDir && (
                             <Item
-                                title={t('sessionInfo.happyHome')}
-                                subtitle={formatPathRelativeToHome(session.metadata.happyHomeDir, session.metadata.homeDir)}
+                                title={t('sessionInfo.nastechHome')}
+                                subtitle={formatPathRelativeToHome(session.metadata.nastechHomeDir, session.metadata.homeDir)}
                                 icon={<Ionicons name="home-outline" size={29} color="#5856D6" />}
                                 showChevron={false}
                             />

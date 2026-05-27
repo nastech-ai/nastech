@@ -3,14 +3,14 @@
 ## Overview
 A new standalone CLI tool (`nastech-agent`) in `packages/nastech-agent` that acts as a dedicated client for controlling NasTech agents remotely. Unlike `nastech-cli` which both runs and controls agents, `nastech-agent` only controls them — listing machines, spawning sessions on a machine, creating sessions, sending messages, reading history, monitoring state, and stopping sessions.
 
-This is a completely separate client from `nastech-cli`. It has its own authentication flow (account auth via QR code, same as device linking in the mobile app), its own credential storage (`~/.happy/agent.key`), and is written from scratch with no code sharing.
+This is a completely separate client from `nastech-cli`. It has its own authentication flow (account auth via QR code, same as device linking in the mobile app), its own credential storage (`~/.nastech/agent.key`), and is written from scratch with no code sharing.
 
 ## Context
 - **Existing system**: Monorepo with `nastech-cli` (agent runtime + control), `nastech-server` (Fastify + PostgreSQL + Redis), `nastech-app` (React Native mobile)
 - **Server API**: REST endpoints at `https://api.nastech.workers.dev` + Socket.IO at `/v1/updates`
-- **Authentication**: Uses account auth flow (`/v1/auth/account/request` + `/v1/auth/account/response`) — generates ephemeral keypair, displays QR code (`happy:///account?[base64url-publicKey]`), user scans with existing Happy mobile app to approve, receives encrypted account secret
-- **Credential storage**: `~/.happy/agent.key` (separate from nastech-cli's `~/.happy/access.key`)
-- **Encryption**: AES-256-GCM (dataKey) for all new sessions. The master content keypair is derived deterministically from the account secret via `deriveKey(secret, 'Happy EnCoder', ['content'])` → seed → `crypto_box_seed_keypair(seed)`. Per-session random keys are encrypted with the master public key and stored on the server.
+- **Authentication**: Uses account auth flow (`/v1/auth/account/request` + `/v1/auth/account/response`) — generates ephemeral keypair, displays QR code (`nastech:///account?[base64url-publicKey]`), user scans with existing NasTech mobile app to approve, receives encrypted account secret
+- **Credential storage**: `~/.nastech/agent.key` (separate from nastech-cli's `~/.nastech/access.key`)
+- **Encryption**: AES-256-GCM (dataKey) for all new sessions. The master content keypair is derived deterministically from the account secret via `deriveKey(secret, 'NasTech EnCoder', ['content'])` → seed → `crypto_box_seed_keypair(seed)`. Per-session random keys are encrypted with the master public key and stored on the server.
 - **Session protocol**: HTTP POST to create sessions, Socket.IO for real-time messages/state updates
 - **Agent state**: `AgentState.controlledByUser` indicates if agent is actively processing; `requests` field tracks pending tool calls
 
@@ -54,7 +54,7 @@ This is a completely separate client from `nastech-cli`. It has its own authenti
   - `deriveSecretKeyTreeRoot(seed, usage)` — HMAC-SHA512 with key = `usage + ' Master Seed'` (UTF-8), data = seed. Split 64-byte result: key = `[0:32]`, chainCode = `[32:64]`
   - `deriveSecretKeyTreeChild(chainCode, index)` — HMAC-SHA512 with key = chainCode, data = `[0x00, ...UTF-8(index)]`. Split same way.
   - `deriveKey(master, usage, path)` — derives root, then iterates path elements through child derivation
-  - `deriveContentKeyPair(secret)` — calls `deriveKey(secret, 'Happy EnCoder', ['content'])` → seed → `sha512(seed)[0:32]` → `tweetnacl.box.keyPair.fromSecretKey()` → returns `{ publicKey, secretKey }`
+  - `deriveContentKeyPair(secret)` — calls `deriveKey(secret, 'NasTech EnCoder', ['content'])` → seed → `sha512(seed)[0:32]` → `tweetnacl.box.keyPair.fromSecretKey()` → returns `{ publicKey, secretKey }`
 - [x] Implement AES-256-GCM encryption:
   - `encryptWithDataKey(data, dataKey)` — AES-256-GCM: `[1-byte version=0][12-byte nonce][ciphertext][16-byte auth tag]`
   - `decryptWithDataKey(bundle, dataKey)` — reverse of above
@@ -77,12 +77,12 @@ This is a completely separate client from `nastech-cli`. It has its own authenti
 - [x] Run tests — must pass before task 3
 
 ### Task 3: Configuration and credential storage
-- [x] Create `src/config.ts` — reads `NASTECH_SERVER_URL` (default: `https://api.nastech.workers.dev`), `HAPPY_HOME_DIR` (default: `~/.happy`), derives credential file path as `${happyHomeDir}/agent.key`
+- [x] Create `src/config.ts` — reads `NASTECH_SERVER_URL` (default: `https://api.nastech.workers.dev`), `NASTECH_HOME_DIR` (default: `~/.nastech`), derives credential file path as `${nastechHomeDir}/agent.key`
 - [x] Create `src/credentials.ts`:
   - `Credentials` type: `{ token: string, secret: Uint8Array, contentKeyPair: { publicKey: Uint8Array, secretKey: Uint8Array } }`
-  - `readCredentials(config)` — parses `~/.happy/agent.key` JSON `{ token, secret }`, decodes secret from base64, derives contentKeyPair via `deriveContentKeyPair(secret)`. Returns `Credentials` or `null` if file missing.
-  - `writeCredentials(config, token, secret)` — writes `{ token, secret: base64(secret) }` to `~/.happy/agent.key`
-  - `clearCredentials(config)` — deletes `~/.happy/agent.key`
+  - `readCredentials(config)` — parses `~/.nastech/agent.key` JSON `{ token, secret }`, decodes secret from base64, derives contentKeyPair via `deriveContentKeyPair(secret)`. Returns `Credentials` or `null` if file missing.
+  - `writeCredentials(config, token, secret)` — writes `{ token, secret: base64(secret) }` to `~/.nastech/agent.key`
+  - `clearCredentials(config)` — deletes `~/.nastech/agent.key`
   - `requireCredentials(config)` — calls `readCredentials`, throws with "Run `nastech-agent auth login` first" if null
 - [x] Write tests for credential read/write round-trip (use temp directory)
 - [x] Write tests for contentKeyPair derivation from secret
@@ -94,9 +94,9 @@ This is a completely separate client from `nastech-cli`. It has its own authenti
 - [x] Create `src/auth.ts` implementing the account auth flow:
   1. Generate ephemeral box keypair: `tweetnacl.box.keyPair.fromSecretKey(randomBytes(32))`
   2. POST `/v1/auth/account/request` with `{ publicKey: base64(keypair.publicKey) }`
-  3. Generate QR code data: `happy:///account?` + base64url(keypair.publicKey)
+  3. Generate QR code data: `nastech:///account?` + base64url(keypair.publicKey)
   4. Display QR code in terminal using `qrcode-terminal`
-  5. Print instructions: "Scan this QR code with the Happy app (Settings → Account → Link New Device)"
+  5. Print instructions: "Scan this QR code with the NasTech app (Settings → Account → Link New Device)"
   6. Poll `/v1/auth/account/request` every 1 second with same publicKey
   7. When `state === 'authorized'`: decrypt `response` using `decryptBoxBundle(decodeBase64(response), keypair.secretKey)` to get the account secret (32 bytes)
   8. Save token + secret via `writeCredentials(config, token, secret)`
@@ -189,14 +189,14 @@ This is a completely separate client from `nastech-cli`. It has its own authenti
 - [x] Add `nastech-agent machines [--active] [--json]`
 - [x] Add machine record decryption using the existing account content key derivation and record data key pattern
 - [x] Add `nastech-agent spawn --machine <machine-id> [--path <path>] [--agent <agent>] [--create-dir] [--json]`
-- [x] Reuse the existing machine RPC contract (`spawn-happy-session`) without encryption shortcuts
+- [x] Reuse the existing machine RPC contract (`spawn-nastech-session`) without encryption shortcuts
 - [x] Add a real integration test that boots `yarn env:up:authenticated`, authenticates `nastech-agent`, lists machines, spawns via the real daemon RPC path, and verifies the live session
 
 ## Technical Details
 
 ### CLI Commands Summary
 ```
-nastech-agent auth login                          # Authenticate via QR code (scanned by Happy mobile app)
+nastech-agent auth login                          # Authenticate via QR code (scanned by NasTech mobile app)
 nastech-agent auth logout                         # Clear stored credentials
 nastech-agent auth status                         # Show authentication status
 
@@ -213,14 +213,14 @@ nastech-agent wait <session-id> [--timeout <s>]   # Wait for agent to become idl
 
 ### Authentication Flow (Account Auth)
 ```
-nastech-agent                          NasTech Server                    Happy Mobile App
+nastech-agent                          NasTech Server                    NasTech Mobile App
      |                                    |                               |
      +-- Generate ephemeral keypair       |                               |
      +-- POST /v1/auth/account/request -> |                               |
      |   { publicKey }                    |                               |
      |                                    |                               |
      +-- Display QR code in terminal      |                               |
-     |   happy:///account?[base64url-key] |                               |
+     |   nastech:///account?[base64url-key] |                               |
      |                                    |                               |
      |                                    |  <-- User scans QR code ------+
      |                                    |                               |
@@ -238,11 +238,11 @@ nastech-agent                          NasTech Server                    Happy M
      +-- box.open(response, ephemeralSK)  |                               |
      |   -> accountSecret (32 bytes)      |                               |
      +-- Save { token, secret }           |                               |
-     |   to ~/.happy/agent.key            |                               |
+     |   to ~/.nastech/agent.key            |                               |
      |                                    |                               |
      +-- Derive content keypair:          |                               |
      |   deriveKey(secret,                |                               |
-     |     'Happy EnCoder', ['content'])  |                               |
+     |     'NasTech EnCoder', ['content'])  |                               |
      |   -> seed -> box keypair           |                               |
      |   (publicKey for encrypting        |                               |
      |    per-session keys,               |                               |
@@ -250,7 +250,7 @@ nastech-agent                          NasTech Server                    Happy M
      v Authenticated                      |                               |
 ```
 
-### Credential File Format (`~/.happy/agent.key`)
+### Credential File Format (`~/.nastech/agent.key`)
 ```json
 {
   "token": "jwt-auth-token",
@@ -261,7 +261,7 @@ nastech-agent                          NasTech Server                    Happy M
 At load time, the content keypair is derived from the secret:
 ```
 secret (32 bytes)
-  -> deriveKey(secret, 'Happy EnCoder', ['content'])
+  -> deriveKey(secret, 'NasTech EnCoder', ['content'])
   -> seed (32 bytes)
   -> sha512(seed)[0:32] -> boxSecretKey
   -> tweetnacl.box.keyPair.fromSecretKey(boxSecretKey)
@@ -325,7 +325,7 @@ Agent is considered idle when ALL of these are true:
 
 ## Post-Completion
 **Manual verification:**
-- Test full auth flow: run `nastech-agent auth login`, scan QR with Happy app, verify credentials saved
+- Test full auth flow: run `nastech-agent auth login`, scan QR with NasTech app, verify credentials saved
 - Test with real server: create session, send message, verify it appears in mobile app
 - Test `wait` command with a running agent session
 - Test `history` command for sessions created by both `nastech-agent` and `nastech-cli`

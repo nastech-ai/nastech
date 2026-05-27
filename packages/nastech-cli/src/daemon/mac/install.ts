@@ -32,7 +32,7 @@ export async function install(): Promise<void> {
         }
 
         // Get the path to the nastech CLI executable
-        const happyPath = process.argv[0]; // Node.js executable
+        const nastechPath = process.argv[0]; // Node.js executable
         const scriptPath = process.argv[1]; // Script path
 
         // Create plist content
@@ -46,7 +46,7 @@ export async function install(): Promise<void> {
                 
                 <key>ProgramArguments</key>
                 <array>
-                    <string>${happyPath}</string>
+                    <string>${nastechPath}</string>
                     <string>${scriptPath}</string>
                     <string>nastech-daemon</string>
                 </array>

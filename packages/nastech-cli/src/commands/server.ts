@@ -49,7 +49,7 @@ interface ServerArtifacts {
     webappDir?: string;
 }
 
-interface HappyServerPackageArtifact {
+interface NasTechServerPackageArtifact {
     command: string;
     prefixArgs?: string[];
     cwd: string;
@@ -66,7 +66,7 @@ export async function handleServerCommand(args: string[]): Promise<void> {
     const serverUrl = `http://${opts.host === '0.0.0.0' ? '127.0.0.1' : opts.host}:${opts.port}`;
     await ensureSettingsWriteAllowed(opts, serverUrl);
 
-    const dataDir = path.join(configuration.happyHomeDir, 'server-data');
+    const dataDir = path.join(configuration.nastechHomeDir, 'server-data');
     const pgliteDir = path.join(dataDir, 'pglite');
     const secretFile = path.join(dataDir, 'master-secret');
 
@@ -390,7 +390,7 @@ function resolveServerArtifacts(): ServerArtifacts | undefined {
 function resolveInstalledServerPackage(): ServerArtifacts | undefined {
     try {
         const serverPackage = require_(SERVER_PACKAGE_NAME) as {
-            resolveServerArtifact?: () => HappyServerPackageArtifact | undefined;
+            resolveServerArtifact?: () => NasTechServerPackageArtifact | undefined;
         };
         const artifact = serverPackage.resolveServerArtifact?.();
         if (!artifact || !artifact.command || !existsSync(artifact.command)) {

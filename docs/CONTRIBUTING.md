@@ -1,6 +1,6 @@
-# Contributing to Happy
+# Contributing to NasTech
 
-Happy is built by engineers who use AI coding tools all day — and we built Happy so we could use them from anywhere. Contributions that make Happy better for that workflow are welcome.
+NasTech is built by engineers who use AI coding tools all day — and we built NasTech so we could use them from anywhere. Contributions that make NasTech better for that workflow are welcome.
 
 If you don't get a response on your PR or issue, tag **@bra1ndump**.
 
@@ -55,11 +55,11 @@ Every issue should start with a **one-paragraph summary** of the problem. Don't 
 
 ```bash
 git clone https://github.com/nastech-ai/nastech.git
-cd happy
+cd nastech
 pnpm install
 ```
 
-### Happy App (Mobile + Web)
+### NasTech App (Mobile + Web)
 
 ```bash
 pnpm --filter nastech-app start          # Expo dev server
@@ -73,9 +73,9 @@ The app has three build variants — all can be installed simultaneously on the 
 
 | Variant | Bundle ID | App Name | Use Case |
 |---------|-----------|----------|----------|
-| Development | `com.slopus.happy.dev` | Happy (dev) | Local development with hot reload |
-| Preview | `com.slopus.happy.preview` | Happy (preview) | Beta testing & OTA updates |
-| Production | `com.ex3ndr.happy` | Happy | App Store release |
+| Development | `com.slopus.nastech.dev` | NasTech (dev) | Local development with hot reload |
+| Preview | `com.slopus.nastech.preview` | NasTech (preview) | Beta testing & OTA updates |
+| Production | `com.ex3ndr.nastech` | NasTech | App Store release |
 
 Swap `ios:dev` for `ios:preview` or `ios:production` (same for `android:`).
 
@@ -86,22 +86,22 @@ pnpm --filter nastech-app tauri:dev      # Run with hot reload
 pnpm --filter nastech-app tauri:build:dev
 ```
 
-### Happy CLI
+### NasTech CLI
 
 ```bash
-pnpm --filter happy build
-pnpm --filter happy test
-pnpm --filter happy cli:install   # Build + link this workspace as the global `happy` + restart daemon
+pnpm --filter nastech build
+pnpm --filter nastech test
+pnpm --filter nastech cli:install   # Build + link this workspace as the global `nastech` + restart daemon
 ```
 
-`cli:install` replaces the `happy` binary installed from npm with a symlink to this workspace.
-It reuses `~/.happy/` (auth, sessions) — no separate dev home. To undo:
+`cli:install` replaces the `nastech` binary installed from npm with a symlink to this workspace.
+It reuses `~/.nastech/` (auth, sessions) — no separate dev home. To undo:
 
 ```bash
-npm unlink -g happy && npm i -g happy@latest
+npm unlink -g nastech && npm i -g nastech@latest
 ```
 
-To sandbox dev data, set `HAPPY_HOME_DIR=~/.happy-dev` in your shell before running `happy`.
+To sandbox dev data, set `NASTECH_HOME_DIR=~/.nastech-dev` in your shell before running `nastech`.
 
 ### NasTech Server
 
@@ -124,7 +124,7 @@ This is a monorepo with four packages:
 - **nastech-agent** — Remote agent control
 - **nastech-server** — Backend for encrypted sync
 
-For architecture details, check the [docs/](.) folder or ask Happy itself — it knows how the project is set up.
+For architecture details, check the [docs/](.) folder or ask NasTech itself — it knows how the project is set up.
 
 ## Community
 

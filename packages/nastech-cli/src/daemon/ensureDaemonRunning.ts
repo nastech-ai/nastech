@@ -1,5 +1,5 @@
 import { logger } from '@/ui/logger'
-import { checkIfDaemonRunningAndCleanupStaleState, isDaemonRunningCurrentlyInstalledHappyVersion } from './controlClient'
+import { checkIfDaemonRunningAndCleanupStaleState, isDaemonRunningCurrentlyInstalledNasTechVersion } from './controlClient'
 import { spawnNasTechCLI } from '@/utils/spawnNasTechCLI'
 
 const DAEMON_READY_TIMEOUT_MS = 5000
@@ -8,7 +8,7 @@ const DAEMON_READY_POLL_INTERVAL_MS = 100
 export async function ensureDaemonRunning(): Promise<void> {
   logger.debug('Ensuring NasTech background service is running & matches our version...')
 
-  if (await isDaemonRunningCurrentlyInstalledHappyVersion()) {
+  if (await isDaemonRunningCurrentlyInstalledNasTechVersion()) {
     return
   }
 

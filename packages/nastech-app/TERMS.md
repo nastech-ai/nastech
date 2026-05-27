@@ -4,9 +4,9 @@ Last updated: January 2025
 
 ## Acceptance of Terms
 
-By downloading, installing, or using Happy, you agree to be bound by these Terms of Use. If you do not agree to these terms, do not use Happy.
+By downloading, installing, or using NasTech, you agree to be bound by these Terms of Use. If you do not agree to these terms, do not use NasTech.
 
-## About Happy
+## About NasTech
 
 NasTech is a free, open-source mobile client for AI code assistance, released under the MIT License. The software is provided as-is by the open-source community without any warranties or guarantees.
 
@@ -23,12 +23,12 @@ The full MIT License text is available in the source code repository.
 
 ## Acceptable Use
 
-You agree to use Happy responsibly and in compliance with all applicable laws. You must not:
+You agree to use NasTech responsibly and in compliance with all applicable laws. You must not:
 
-- Use Happy for any illegal or unauthorized purpose
-- Attempt to harm, disable, or impair the functionality of Happy
-- Use Happy to generate harmful, offensive, or inappropriate content
-- Violate the terms of service of any AI services you connect to through Happy
+- Use NasTech for any illegal or unauthorized purpose
+- Attempt to harm, disable, or impair the functionality of NasTech
+- Use NasTech to generate harmful, offensive, or inappropriate content
+- Violate the terms of service of any AI services you connect to through NasTech
 - Attempt to reverse engineer security features or encryption protocols
 
 ## Third-Party Services
@@ -37,21 +37,21 @@ NasTech may connect to third-party AI services (such as Claude, OpenAI, etc.). Y
 
 - You are responsible for complying with their terms of service
 - You need valid API keys and accounts with these services
-- Happy is not responsible for the availability or performance of third-party services
+- NasTech is not responsible for the availability or performance of third-party services
 - Costs associated with API usage are your responsibility
 
 ## Independence and Disclaimers
 
-**Happy is an independent, community-driven project.** We are not affiliated with, endorsed by, or connected to Anthropic, Claude, OpenAI, or any other AI service providers. Happy is a third-party client that works with publicly available APIs.
+**NasTech is an independent, community-driven project.** We are not affiliated with, endorsed by, or connected to Anthropic, Claude, OpenAI, or any other AI service providers. NasTech is a third-party client that works with publicly available APIs.
 
 ## Limitation of Liability
 
-**IMPORTANT:** Happy is provided "AS IS" without warranty of any kind. The developers, contributors, and distributors of Happy shall not be liable for:
+**IMPORTANT:** NasTech is provided "AS IS" without warranty of any kind. The developers, contributors, and distributors of NasTech shall not be liable for:
 
 - Any direct, indirect, incidental, or consequential damages
 - Data loss or corruption
 - Lost profits or business interruption
-- Any claims arising from your use of Happy
+- Any claims arising from your use of NasTech
 
 ## Privacy
 
@@ -64,7 +64,7 @@ NasTech respects your privacy. The app:
 
 ## Changes to Terms
 
-We reserve the right to update these Terms of Use at any time. Continued use of Happy after changes constitutes acceptance of the new terms.
+We reserve the right to update these Terms of Use at any time. Continued use of NasTech after changes constitutes acceptance of the new terms.
 
 ## Governing Law
 

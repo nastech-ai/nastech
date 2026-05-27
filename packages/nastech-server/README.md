@@ -2,7 +2,7 @@
 
 Minimal backend for open-source end-to-end encrypted Claude Code clients.
 
-## What is Happy?
+## What is NasTech?
 
 NasTech Server is the synchronization backbone for secure Claude Code clients. It enables multiple devices to share encrypted conversations while maintaining complete privacy - the server never sees your messages, only encrypted blobs it cannot read.
 
@@ -20,13 +20,13 @@ NasTech Server is the synchronization backbone for secure Claude Code clients. I
 
 ## How It Works
 
-Your Claude Code clients generate encryption keys locally and use Happy Server as a secure relay. Messages are end-to-end encrypted before leaving your device. The server's job is simple: store encrypted blobs and sync them between your devices in real-time.
+Your Claude Code clients generate encryption keys locally and use NasTech Server as a secure relay. Messages are end-to-end encrypted before leaving your device. The server's job is simple: store encrypted blobs and sync them between your devices in real-time.
 
 ## Hosting
 
-**You don't need to self-host!** Our free cloud Happy Server at `api.nastech.workers.dev` is just as secure as running your own. Since all data is end-to-end encrypted before it reaches our servers, we literally cannot read your messages even if we wanted to. The encryption happens on your device, and only you have the keys.
+**You don't need to self-host!** Our free cloud NasTech Server at `api.nastech.workers.dev` is just as secure as running your own. Since all data is end-to-end encrypted before it reaches our servers, we literally cannot read your messages even if we wanted to. The encryption happens on your device, and only you have the keys.
 
-That said, Happy Server is open source and self-hostable if you prefer running your own infrastructure. The security model is identical whether you use our servers or your own.
+That said, NasTech Server is open source and self-hostable if you prefer running your own infrastructure. The security model is identical whether you use our servers or your own.
 
 ## Self-Hosting with Docker
 
@@ -87,7 +87,7 @@ policy (30 days is a reasonable default).
 
 ```bash
 # AWS CLI
-aws s3api put-bucket-lifecycle-configuration --bucket happy-blobs \
+aws s3api put-bucket-lifecycle-configuration --bucket nastech-blobs \
   --lifecycle-configuration '{
     "Rules": [{
       "ID": "session-attachments-ttl",
@@ -98,7 +98,7 @@ aws s3api put-bucket-lifecycle-configuration --bucket happy-blobs \
   }'
 
 # MinIO
-mc ilm rule add myminio/happy-blobs \
+mc ilm rule add myminio/nastech-blobs \
   --expire-days 30 \
   --prefix "sessions/"
 ```
@@ -110,7 +110,7 @@ storage access without the keys.
 
 ```bash
 # AWS CLI
-aws s3api put-bucket-encryption --bucket happy-blobs \
+aws s3api put-bucket-encryption --bucket nastech-blobs \
   --server-side-encryption-configuration '{
     "Rules": [{
       "ApplyServerSideEncryptionByDefault": {
@@ -120,7 +120,7 @@ aws s3api put-bucket-encryption --bucket happy-blobs \
   }'
 
 # MinIO
-mc encrypt set sse-s3 myminio/happy-blobs
+mc encrypt set sse-s3 myminio/nastech-blobs
 ```
 
 Local-storage mode (no `S3_HOST`) writes blobs under

@@ -148,7 +148,7 @@ export class ApiSessionClient extends EventEmitter {
                 token: this.token,
                 clientType: 'session-scoped' as const,
                 sessionId: this.sessionId,
-                happyClient: `cli-coding-session/${configuration.currentCliVersion}`
+                nastechClient: `cli-coding-session/${configuration.currentCliVersion}`
             },
             path: '/v1/updates',
             reconnection: false,

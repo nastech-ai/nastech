@@ -757,7 +757,7 @@ function buildEnvVars(envDir: string, serverPort: number, expoPort: number): Rec
         NASTECH_SERVER_URL: `http://localhost:${serverPort}`,
         NASTECH_WEBAPP_URL: `http://localhost:${expoPort}`,
         NASTECH_HOME_DIR: path.join(envDir, "cli", "home"),
-        HAPPY_PROJECT_DIR: projectDir,
+        NASTECH_PROJECT_DIR: projectDir,
         NASTECH_VARIANT: "dev",
         DEBUG: "1",
         ...(devAuth ? {
@@ -802,7 +802,7 @@ function buildEnvSh(name: string, envDir: string, serverPort: number, expoPort: 
     lines.push(`export NASTECH_SERVER_URL="${vars.NASTECH_SERVER_URL}"`);
     lines.push(`export NASTECH_WEBAPP_URL="${vars.NASTECH_WEBAPP_URL}"`);
     lines.push(`export NASTECH_HOME_DIR="${vars.NASTECH_HOME_DIR}"`);
-    lines.push(`export HAPPY_PROJECT_DIR="${vars.HAPPY_PROJECT_DIR}"`);
+    lines.push(`export NASTECH_PROJECT_DIR="${vars.NASTECH_PROJECT_DIR}"`);
     lines.push(`export NASTECH_VARIANT=dev`);
     lines.push(`export DEBUG=1`);
     lines.push(`export PATH="${path.join(envDir, "bin")}:$PATH"`);

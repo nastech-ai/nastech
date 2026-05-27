@@ -1,6 +1,6 @@
 # Deployment
 
-This document describes how to deploy the Happy backend (`packages/nastech-server`) and the infrastructure it expects.
+This document describes how to deploy the NasTech backend (`packages/nastech-server`) and the infrastructure it expects.
 
 ## Runtime overview
 - **App server:** Node.js running `tsx ./sources/main.ts` (Fastify + Socket.IO).
@@ -17,7 +17,7 @@ This document describes how to deploy the Happy backend (`packages/nastech-serve
 2. **Redis**
    - Required by startup (`redis.ping()` is called).
    - Configure via `REDIS_URL`.
-   - Managed by this repo: `packages/nastech-server/deploy/happy-redis.yaml` (StatefulSet + redis-exporter sidecar).
+   - Managed by this repo: `packages/nastech-server/deploy/nastech-redis.yaml` (StatefulSet + redis-exporter sidecar).
 
 3. **S3-compatible storage**
    - Used for avatars and other uploaded assets.
@@ -58,7 +58,7 @@ Key notes:
 ## Kubernetes manifests
 Example manifests live in `packages/nastech-server/deploy`:
 - `handy.yaml`: Deployment + Service + ExternalSecrets for the server.
-- `happy-redis.yaml`: Redis StatefulSet + Service + ConfigMap.
+- `nastech-redis.yaml`: Redis StatefulSet + Service + ConfigMap.
 
 The deployment config expects:
 - Prometheus scraping annotations on port `9090`.

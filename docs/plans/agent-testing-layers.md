@@ -12,7 +12,7 @@ Source of truth:
 
 ## Layer 2
 
-Layer 2 is full Happy product validation.
+Layer 2 is full NasTech product validation.
 
 Source of truth:
 

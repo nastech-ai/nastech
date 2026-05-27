@@ -47,7 +47,7 @@ async function stopAllTrackedSessions(): Promise<void> {
 
   await Promise.all(
     sessions.map((session: any) =>
-      stopDaemonSession(session.happySessionId ?? `PID-${session.pid}`).catch(() => false)
+      stopDaemonSession(session.nastechSessionId ?? `PID-${session.pid}`).catch(() => false)
     ),
   );
 }
@@ -94,9 +94,9 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
       path: '/test/path',
       host: 'test-host',
       homeDir: '/test/home',
-      happyHomeDir: '/test/nastech-home',
-      happyLibDir: '/test/nastech-lib',
-      happyToolsDir: '/test/nastech-tools',
+      nastechHomeDir: '/test/nastech-home',
+      nastechLibDir: '/test/nastech-lib',
+      nastechToolsDir: '/test/nastech-tools',
       hostPid: 99999,
       startedBy: 'terminal',
       machineId: 'test-machine-123'
@@ -110,7 +110,7 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
     
     const tracked = sessions[0];
     expect(tracked.startedBy).toBe('nastech directly - likely by user from terminal');
-    expect(tracked.happySessionId).toBe('test-session-123');
+    expect(tracked.nastechSessionId).toBe('test-session-123');
     expect(tracked.pid).toBe(99999);
   });
 
@@ -123,15 +123,15 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
     // Verify session is tracked
     const sessions = await listDaemonSessions();
     const spawnedSession = sessions.find(
-      (s: any) => s.happySessionId === response.sessionId
+      (s: any) => s.nastechSessionId === response.sessionId
     );
     
     expect(spawnedSession).toBeDefined();
     expect(spawnedSession.startedBy).toBe('daemon');
     
     // Clean up - stop the spawned session
-    expect(spawnedSession.happySessionId).toBeDefined();
-    await stopDaemonSession(spawnedSession.happySessionId);
+    expect(spawnedSession.nastechSessionId).toBeDefined();
+    await stopDaemonSession(spawnedSession.nastechSessionId);
   });
 
   it('stress test: spawn / stop', { timeout: 60_000 }, async () => {
@@ -192,7 +192,7 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
       (s: any) => s.pid === terminalNasTechProcess.pid
     );
     const daemonSession = sessions.find(
-      (s: any) => s.happySessionId === spawnResponse.sessionId
+      (s: any) => s.nastechSessionId === spawnResponse.sessionId
     );
 
     expect(terminalSession).toBeDefined();
@@ -203,7 +203,7 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
 
     // Clean up both sessions
     await stopDaemonSession('terminal-session-aaa');
-    await stopDaemonSession(daemonSession.happySessionId);
+    await stopDaemonSession(daemonSession.nastechSessionId);
     
     // Also kill the terminal process directly to be sure
     try {
@@ -219,7 +219,7 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
 
     // Verify webhook was processed (session ID updated)
     const sessions = await listDaemonSessions();
-    const session = sessions.find((s: any) => s.happySessionId === spawnResponse.sessionId);
+    const session = sessions.find((s: any) => s.nastechSessionId === spawnResponse.sessionId);
     expect(session).toBeDefined();
 
     // Clean up
@@ -278,14 +278,14 @@ describe('Daemon Integration Tests', { timeout: 180_000 }, () => {
     // List should show all sessions
     const sessions = await listDaemonSessions();
     const daemonSessions = sessions.filter(
-      (s: any) => s.startedBy === 'daemon' && spawnedSessionIds.includes(s.happySessionId)
+      (s: any) => s.startedBy === 'daemon' && spawnedSessionIds.includes(s.nastechSessionId)
     );
     expect(daemonSessions.length).toBeGreaterThanOrEqual(3);
 
     // Stop all spawned sessions
     for (const session of daemonSessions) {
-      expect(session.happySessionId).toBeDefined();
-      await stopDaemonSession(session.happySessionId);
+      expect(session.nastechSessionId).toBeDefined();
+      await stopDaemonSession(session.nastechSessionId);
     }
   });
 

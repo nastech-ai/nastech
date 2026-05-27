@@ -182,7 +182,7 @@ export async function checkIfDaemonRunningAndCleanupStaleState(): Promise<boolea
  * 
  * @returns true if versions match, false if versions differ or no daemon running
  */
-export async function isDaemonRunningCurrentlyInstalledHappyVersion(): Promise<boolean> {
+export async function isDaemonRunningCurrentlyInstalledNasTechVersion(): Promise<boolean> {
   logger.debug('[DAEMON CONTROL] Checking if daemon is running same version');
   const runningDaemon = await checkIfDaemonRunningAndCleanupStaleState();
   if (!runningDaemon) {

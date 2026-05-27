@@ -29,7 +29,7 @@ Desktop got a full refresh with a file browser, built-in editor, and zen mode. S
 - Smarter push notifications — suppressed when you're already in the app.
 - Unread dots persist on sessions until you open them.
 - Redesigned sidebar with file browser, code editor, and zen mode.
-- Fixed stale sessions refusing to load, blank screen on launch, dual cursors in remote mode, `claude --resume` not finding Happy sessions.
+- Fixed stale sessions refusing to load, blank screen on launch, dual cursors in remote mode, `claude --resume` not finding NasTech sessions.
 
 ## Experimental
 
@@ -91,7 +91,7 @@ Sessions start instantly now. No more manual CLI startup.
 
 # August 29 — GitHub integration
 
-Your GitHub identity in Happy.
+Your GitHub identity in NasTech.
 
 - Connect your GitHub account via OAuth.
 - Avatar, name, and bio sync to the app.

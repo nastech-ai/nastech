@@ -1,23 +1,23 @@
-# `happy server` — bundled self-host mode
+# `nastech server` — bundled self-host mode
 
 ## Goal
 
-Ship a zero-network, fully self-hosted Happy in the regular `npm i -g happy` package. One foreground command — `happy server` — runs the sync server + web app on `localhost` and writes the local URL into `~/.happy/settings.json`. Every other Happy process (daemon, `happy claude`, etc.) reads that URL from settings. No analytics, no external endpoints, no extra installs.
+Ship a zero-network, fully self-hosted NasTech in the regular `npm i -g nastech` package. One foreground command — `nastech server` — runs the sync server + web app on `localhost` and writes the local URL into `~/.nastech/settings.json`. Every other NasTech process (daemon, `nastech claude`, etc.) reads that URL from settings. No analytics, no external endpoints, no extra installs.
 
 ## Bootstrap (the v1 user flow)
 
 ```bash
 # Terminal 1 — start the server (blocks; Ctrl-C to stop)
-happy server
+nastech server
 
 # On first start, prints:
 #   Wrote settings.serverUrl = http://127.0.0.1:3005
-#   Happy server listening at http://127.0.0.1:3005
+#   NasTech server listening at http://127.0.0.1:3005
 #   Open http://127.0.0.1:3005 in your browser
 
 # Terminal 2 — daemon and CLI now target localhost (read from settings)
-happy daemon start
-happy claude
+nastech daemon start
+nastech claude
 
 # Web UI at http://127.0.0.1:3005 — pair / start sessions from there
 ```
@@ -26,7 +26,7 @@ That's it. No daemon flags, no `--serve` flag on `daemon start`. Two commands, b
 
 ## Design decisions
 
-### 1. `happy server` runs the server synchronously in the foreground
+### 1. `nastech server` runs the server synchronously in the foreground
 
 - No daemonization, no spawn, no background process management.
 - Ctrl-C stops it. If it dies, things break — that's the point.
@@ -39,16 +39,16 @@ Add to `Settings` in `packages/nastech-cli/src/persistence.ts:37`:
 ```ts
 interface Settings {
   ...existing...
-  serverUrl?: string;   // e.g. 'http://127.0.0.1:3005' — when set, used by all happy processes
+  serverUrl?: string;   // e.g. 'http://127.0.0.1:3005' — when set, used by all nastech processes
 }
 ```
 
 That's the entire persistence surface. No nested `selfHost: { enabled, port, host, dataDir }` object.
 
-- `happy server` writes this on startup.
-- `happy server --port 8080 --host 0.0.0.0` writes `http://0.0.0.0:8080` (or printed LAN IP).
-- `happy server --reset` clears the field and exits without starting the server.
-- Users can also just edit `~/.happy/settings.json` by hand.
+- `nastech server` writes this on startup.
+- `nastech server --port 8080 --host 0.0.0.0` writes `http://0.0.0.0:8080` (or printed LAN IP).
+- `nastech server --reset` clears the field and exits without starting the server.
+- Users can also just edit `~/.nastech/settings.json` by hand.
 
 ### 3. No fallback. Period.
 
@@ -63,7 +63,7 @@ Rationale: self-host users explicitly opted in. Silent fallback to the public se
 ```ts
 this.serverUrl =
   process.env.NASTECH_SERVER_URL              // env var still wins (debug/override)
-  || settings.serverUrl                     // NEW — from ~/.happy/settings.json
+  || settings.serverUrl                     // NEW — from ~/.nastech/settings.json
   || 'https://api.nastech.workers.dev';     // default unchanged
 ```
 
@@ -71,10 +71,10 @@ For existing users: `settings.serverUrl` is `undefined` → falls through to def
 
 ### 5. Web app — same-origin trick
 
-Happy-server serves the bundled webapp on its own port. At serve time, the static handler rewrites `index.html` to inject:
+NasTech-server serves the bundled webapp on its own port. At serve time, the static handler rewrites `index.html` to inject:
 
 ```html
-<script>window.__HAPPY_CONFIG__ = { serverUrl: location.origin, disableAnalytics: true };</script>
+<script>window.__NASTECH_CONFIG__ = { serverUrl: location.origin, disableAnalytics: true };</script>
 ```
 
 And `packages/nastech-app/sources/sync/serverConfig.ts:10-14` gets one extra fallback:
@@ -82,17 +82,17 @@ And `packages/nastech-app/sources/sync/serverConfig.ts:10-14` gets one extra fal
 ```ts
 export function getServerUrl(): string {
   return serverConfigStorage.getString(SERVER_KEY) ||
-         (globalThis as any).__HAPPY_CONFIG__?.serverUrl ||  // NEW
+         (globalThis as any).__NASTECH_CONFIG__?.serverUrl ||  // NEW
          process.env.EXPO_PUBLIC_NASTECH_SERVER_URL ||
          DEFAULT_SERVER_URL;
 }
 ```
 
-Production `ba.nastech.workers.dev` never has `__HAPPY_CONFIG__` set → no behavior change there. Self-host injects it → web calls its own origin. One bundle, two behaviors.
+Production `ba.nastech.workers.dev` never has `__NASTECH_CONFIG__` set → no behavior change there. Self-host injects it → web calls its own origin. One bundle, two behaviors.
 
 ### 6. Daemon needs no changes
 
-Because the daemon reads `configuration.serverUrl` like every other entry point, and `configuration` now reads from `settings.serverUrl`, the daemon Just Works™ when a user has run `happy server`. Zero code in `daemon/run.ts`. (v2 can add daemon-managed lifecycle if needed.)
+Because the daemon reads `configuration.serverUrl` like every other entry point, and `configuration` now reads from `settings.serverUrl`, the daemon Just Works™ when a user has run `nastech server`. Zero code in `daemon/run.ts`. (v2 can add daemon-managed lifecycle if needed.)
 
 ## Disabling analytics (defense in depth)
 
@@ -115,7 +115,7 @@ import PostHog from 'posthog-react-native';
 const analyticsDisabled =
   process.env.EXPO_PUBLIC_DISABLE_ANALYTICS === '1' ||
   process.env.EXPO_PUBLIC_DISABLE_ANALYTICS === 'true' ||
-  (globalThis as any).__HAPPY_CONFIG__?.disableAnalytics === true;
+  (globalThis as any).__NASTECH_CONFIG__?.disableAnalytics === true;
 
 export const tracking = (analyticsDisabled || !config.postHogKey)
   ? null
@@ -127,15 +127,15 @@ export const tracking = (analyticsDisabled || !config.postHogKey)
 
 Two ways to flip it:
 - `EXPO_PUBLIC_DISABLE_ANALYTICS=1` at build OR runtime (Expo public env vars are inlined into the bundle, but `process.env` lookups remain queryable on web).
-- `window.__HAPPY_CONFIG__.disableAnalytics = true` injected by nastech-server's static handler.
+- `window.__NASTECH_CONFIG__.disableAnalytics = true` injected by nastech-server's static handler.
 
-**Layer 3 — Self-host mode auto-disables.** The HTML rewrite in `happy server` always includes `disableAnalytics: true`:
+**Layer 3 — Self-host mode auto-disables.** The HTML rewrite in `nastech server` always includes `disableAnalytics: true`:
 
 ```ts
 injectHtmlConfig: { serverUrl: '/', disableAnalytics: true }
 ```
 
-So any webapp served by `happy server` has analytics off regardless of what was baked into the bundle at build time. If a user's enterprise rebuilds happy with their own PostHog key (intentionally), they still can't accidentally leak when they `happy server` — the script-tag injection wins.
+So any webapp served by `nastech server` has analytics off regardless of what was baked into the bundle at build time. If a user's enterprise rebuilds nastech with their own PostHog key (intentionally), they still can't accidentally leak when they `nastech server` — the script-tag injection wins.
 
 ### What this does NOT do (yet, optional)
 
@@ -143,7 +143,7 @@ So any webapp served by `happy server` has analytics off regardless of what was 
 - Truly auditable "no PostHog code at all" would need a build-time stub swap (e.g. Metro resolver alias `tracking.ts` → `tracking.empty.ts`). Listed as a v2 idea.
 
 ### CLI / server / agent — nothing to add
-No analytics code exists. Nothing to disable. (If we ever add CLI telemetry in the future, the same env var name `HAPPY_DISABLE_ANALYTICS=1` should be the kill switch — drop `EXPO_PUBLIC_` prefix.)
+No analytics code exists. Nothing to disable. (If we ever add CLI telemetry in the future, the same env var name `NASTECH_DISABLE_ANALYTICS=1` should be the kill switch — drop `EXPO_PUBLIC_` prefix.)
 
 ## How current users are unaffected
 
@@ -151,14 +151,14 @@ Three guarantees, all hinging on `settings.serverUrl === undefined` for existing
 
 1. **Settings default**: optional field, missing in existing `settings.json`. `readSettings()` returns `undefined`.
 2. **Configuration URL**: middle clause in precedence chain is `undefined` → falls through to current default. Byte-identical behavior.
-3. **Web app**: `window.__HAPPY_CONFIG__` only ever set by the static handler in self-host mode. Production builds at `ba.nastech.workers.dev` never see it.
+3. **Web app**: `window.__NASTECH_CONFIG__` only ever set by the static handler in self-host mode. Production builds at `ba.nastech.workers.dev` never see it.
 
 The only real cost: **~30 MB extra in the npm tarball** for the bundled webapp + pglite wasm + migrations. Paid by all users, even non-self-hosters. Acceptable on a 121 MB package; mitigated by the orthogonal `difft` cleanup (could free ~70 MB).
 
 ## Tarball layout
 
 ```
-happy@1.x.x/
+nastech@1.x.x/
 ├── dist/                        existing — bundled JS (now imports @nastech-ai/nastech-server)
 ├── bin/                         existing
 ├── tools/                       existing — ripgrep + difft binaries
@@ -192,11 +192,11 @@ PGlite gets the wasm path passed explicitly so bundling doesn't break the lookup
 
 **`packages/nastech-cli/src/commands/server.ts`** (~80 LOC)
 ```
-happy server                      start server, write URL, block
-happy server --port N             custom port
-happy server --host 0.0.0.0       bind for LAN/mobile
-happy server --reset              clear settings.serverUrl, exit
-happy server --no-persist         start server but don't touch settings (test mode)
+nastech server                      start server, write URL, block
+nastech server --port N             custom port
+nastech server --host 0.0.0.0       bind for LAN/mobile
+nastech server --reset              clear settings.serverUrl, exit
+nastech server --no-persist         start server but don't touch settings (test mode)
 ```
 Flow: parse args → `updateSettings({ serverUrl })` (unless `--no-persist`) → `migrate(...)` → `startServer(...)` → log URL → await server close on SIGINT/SIGTERM.
 
@@ -213,7 +213,7 @@ export async function startServer(opts: {
   staticDir?: string; injectHtmlConfig?: Record<string, unknown>;
 }): Promise<{ close(): Promise<void>; url: string }>
 ```
-When `staticDir` set, register `@fastify/static` on `/*` with an `onSend` hook that prepends the `__HAPPY_CONFIG__` script tag into `index.html`.
+When `staticDir` set, register `@fastify/static` on `/*` with an `onSend` hook that prepends the `__NASTECH_CONFIG__` script tag into `index.html`.
 
 ### Modified files
 
@@ -238,10 +238,10 @@ When `staticDir` set, register `@fastify/static` on `/*` with an `onSend` hook t
 - Add `@fastify/static` dep
 
 **`packages/nastech-app/sources/sync/serverConfig.ts`**
-- 3-line `__HAPPY_CONFIG__` fallback
+- 3-line `__NASTECH_CONFIG__` fallback
 
 **`packages/nastech-app/sources/track/tracking.ts`**
-- 3-layer kill switch (env var + `__HAPPY_CONFIG__.disableAnalytics`) (~8 LOC)
+- 3-layer kill switch (env var + `__NASTECH_CONFIG__.disableAnalytics`) (~8 LOC)
 
 ## Net LOC
 
@@ -261,20 +261,20 @@ No daemon changes. Bundle adds ~30 MB to the npm tarball.
 
 ## Master secret
 
-- Generated on first `happy server` start: 32 random bytes → `~/.happy/server/master-secret` (0600 perms).
+- Generated on first `nastech server` start: 32 random bytes → `~/.nastech/server/master-secret` (0600 perms).
 - Reused on subsequent starts.
-- If deleted, all self-host data becomes unreadable. Print loud warning in `happy server --reset` and in startup logs.
-- No derivation from existing happy credentials — keep self-host data independent.
+- If deleted, all self-host data becomes unreadable. Print loud warning in `nastech server --reset` and in startup logs.
+- No derivation from existing nastech credentials — keep self-host data independent.
 
 ## Data directory layout (per-user)
 
 ```
-~/.happy/
+~/.nastech/
 ├── settings.json            existing — now also holds serverUrl?
 ├── access.key               existing
 ├── daemon.state.json        existing
 ├── logs/                    existing
-└── server/                  NEW — only created by `happy server`
+└── server/                  NEW — only created by `nastech server`
     ├── master-secret        32 random bytes, 0600
     └── db/                  PGlite data directory
         └── ...
@@ -292,19 +292,19 @@ No daemon changes. Bundle adds ~30 MB to the npm tarball.
 
 1. **Analytics kill switch first** — patch `tracking.ts` with the 3-layer guard. Tiny PR, lands immediately, useful even without self-host.
 2. Export `migrate` / `startServer` from `@nastech-ai/nastech-server`, flip `private: false`, add `@fastify/static`. No functional change anywhere else. Verify package publishes cleanly.
-3. Add `window.__HAPPY_CONFIG__` fallback to `serverConfig.ts`. No behavior change in production.
+3. Add `window.__NASTECH_CONFIG__` fallback to `serverConfig.ts`. No behavior change in production.
 4. Build-assets script + `server-assets/` directory. Verify `pkgroll` includes it.
 5. `settings.serverUrl` field + `configuration.ts` precedence change. Test that existing users see no change (undefined → fallthrough).
-6. `happy server` command end-to-end. Smoke test: `happy server` in one terminal, `happy claude` in another, verify CLI targets localhost.
+6. `nastech server` command end-to-end. Smoke test: `nastech server` in one terminal, `nastech claude` in another, verify CLI targets localhost.
 7. Docs / README.
 8. Release.
 
 ## v2 ideas (not now)
 
-- Daemon-managed server lifecycle (`happy daemon start --server`, auto-restart, launchd integration).
+- Daemon-managed server lifecycle (`nastech daemon start --server`, auto-restart, launchd integration).
 - Process isolation so a server crash doesn't take the daemon down.
 - Admin-token / auto-pair-first-client for single-user enforcement.
-- `happy server status` / `happy server stop` as ergonomics on top of the foreground command.
+- `nastech server status` / `nastech server stop` as ergonomics on top of the foreground command.
 - Build-time stub swap to fully remove `posthog-react-native` from the bundle (Metro resolver alias `tracking.ts` → empty module).
 - Parameterize the 5 cosmetic `ba.nastech.workers.dev` URLs.
 - `PUBLIC_WEBAPP_URL` for nastech-server OAuth redirects.
@@ -331,4 +331,4 @@ Only `nastech-app` has PostHog (`packages/nastech-app/sources/track/tracking.ts:
 - `nastech-app/app.config.js:46,77` + iOS/Android manifests — universal link domain
 
 ### Published package size
-`happy@1.1.7` on npm: **121 MB packed / 238 MB unpacked**. Dominated by `tools/unpacked/difft` (113 MB) + ripgrep platform archives (~27 MB).
+`nastech@1.1.7` on npm: **121 MB packed / 238 MB unpacked**. Dominated by `tools/unpacked/difft` (113 MB) + ripgrep platform archives (~27 MB).

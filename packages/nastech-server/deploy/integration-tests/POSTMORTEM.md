@@ -130,7 +130,7 @@ Once it happens, it stays broken.
 
 ### Bug #4: streams adapter unbounded-ish growth
 
-**Observation:** `kubectl exec happy-redis-0 -- redis-cli XINFO STREAM socket.io`
+**Observation:** `kubectl exec nastech-redis-0 -- redis-cli XINFO STREAM socket.io`
 
 ```
 length            4946

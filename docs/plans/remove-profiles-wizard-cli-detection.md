@@ -55,10 +55,10 @@ Update `initialMachineMetadata` construction to call `detectCLIAvailability()` a
 export const initialMachineMetadata: MachineMetadata = {
   host: os.hostname(),
   platform: os.platform(),
-  happyCliVersion: packageJson.version,
+  nastechCliVersion: packageJson.version,
   homeDir: os.homedir(),
-  happyHomeDir: configuration.happyHomeDir,
-  happyLibDir: projectPath(),
+  nastechHomeDir: configuration.nastechHomeDir,
+  nastechLibDir: projectPath(),
   cliAvailability: detectCLIAvailability(),
 };
 ```

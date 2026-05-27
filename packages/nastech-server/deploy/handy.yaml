@@ -32,7 +32,7 @@ spec:
         - name: PORT
           value: "3005"
         - name: REDIS_URL
-          value: redis://happy-redis:6379
+          value: redis://nastech-redis:6379
         - name: S3_PUBLIC_URL
           value: https://files.nastech.workers.dev/nastech
         envFrom:
@@ -108,20 +108,20 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: happy-redis
+  name: nastech-redis
   labels:
-    app: happy-redis
+    app: nastech-redis
 spec:
   ports:
   - port: 6379
     name: redis
   selector:
-    app: happy-redis
+    app: nastech-redis
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: happy-redis-config
+  name: nastech-redis-config
 data:
   redis.conf: |
     dir /data
@@ -135,17 +135,17 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: happy-redis
+  name: nastech-redis
 spec:
-  serviceName: happy-redis
+  serviceName: nastech-redis
   replicas: 1
   selector:
     matchLabels:
-      app: happy-redis
+      app: nastech-redis
   template:
     metadata:
       labels:
-        app: happy-redis
+        app: nastech-redis
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9121"
@@ -190,7 +190,7 @@ spec:
       volumes:
       - name: redis-config
         configMap:
-          name: happy-redis-config
+          name: nastech-redis-config
   volumeClaimTemplates:
   - metadata:
       name: redis-data

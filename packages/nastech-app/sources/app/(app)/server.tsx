@@ -103,7 +103,7 @@ export default function ServerConfigScreen() {
             
             const text = await response.text();
             if (!text.includes('Welcome to NasTech Server!')) {
-                setError(t('server.notValidHappyServer'));
+                setError(t('server.notValidNasTechServer'));
                 return false;
             }
             

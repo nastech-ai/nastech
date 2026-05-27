@@ -45,7 +45,7 @@ cleanup() {
         kill "$pid" 2>/dev/null && wait "$pid" 2>/dev/null || true
     done
     pkill -f "port-forward svc/handy-server" 2>/dev/null || true
-    pkill -f "port-forward svc/happy-redis" 2>/dev/null || true
+    pkill -f "port-forward svc/nastech-redis" 2>/dev/null || true
 }
 trap cleanup EXIT
 
@@ -106,7 +106,7 @@ setup_server_url() {
     fi
 
     # Redis always needs port-forward (only used by stress-prod-realistic)
-    kubectl port-forward svc/happy-redis "$REDIS_PORT:6379" &>/dev/null &
+    kubectl port-forward svc/nastech-redis "$REDIS_PORT:6379" &>/dev/null &
     PF_PIDS+=($!)
 
     # Wait for server

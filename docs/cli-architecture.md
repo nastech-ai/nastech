@@ -1,12 +1,12 @@
 # CLI Architecture
 
-This document describes the Happy CLI (`packages/nastech-cli`) and its daemon. The CLI is both an interactive tool and a background session manager that keeps machine state in sync with the server.
+This document describes the NasTech CLI (`packages/nastech-cli`) and its daemon. The CLI is both an interactive tool and a background session manager that keeps machine state in sync with the server.
 
 ## System overview
 
 ```mermaid
 graph TB
-    subgraph "Happy CLI"
+    subgraph "NasTech CLI"
         Entry[src/index.ts]
         API[API Client]
         Daemon[Daemon Process]
@@ -14,7 +14,7 @@ graph TB
         Persist[Persistence]
     end
 
-    subgraph "~/.happy"
+    subgraph "~/.nastech"
         Settings[settings.json]
         AccessKey[access.key]
         DaemonState[daemon.state.json]
@@ -42,14 +42,14 @@ graph TB
 - **Entry point:** `src/index.ts` parses subcommands and routes execution.
 - **API client:** `src/api` handles HTTP + Socket.IO, encryption, and RPC.
 - **Daemon:** `src/daemon` runs in the background, spawns sessions, and maintains machine state.
-- **Persistence/config:** `src/persistence.ts` + `src/configuration.ts` manage local state in `~/.happy`.
+- **Persistence/config:** `src/persistence.ts` + `src/configuration.ts` manage local state in `~/.nastech`.
 - **Agents:** `src/claude`, `src/codex`, `src/gemini` provide provider-specific runners.
 
 ## CLI entry flow
 
 ```mermaid
 flowchart TD
-    Start([happy ...]) --> Parse[Parse subcommand]
+    Start([nastech ...]) --> Parse[Parse subcommand]
 
     Parse --> Doctor{doctor?}
     Parse --> Auth{auth?}
@@ -80,7 +80,7 @@ flowchart TD
 
 ```mermaid
 graph LR
-    subgraph "~/.happy"
+    subgraph "~/.nastech"
         direction TB
         settings["settings.json<br/><i>profile, onboarding</i>"]
         access["access.key<br/><i>encryption keys</i>"]
@@ -90,26 +90,26 @@ graph LR
 
     subgraph "Environment Overrides"
         direction TB
-        E1[HAPPY_HOME_DIR]
+        E1[NASTECH_HOME_DIR]
         E2[NASTECH_SERVER_URL]
-        E3[HAPPY_WEBAPP_URL]
-        E4[HAPPY_VARIANT]
-        E5[HAPPY_EXPERIMENTAL]
-        E6[HAPPY_DISABLE_CAFFEINATE]
+        E3[NASTECH_WEBAPP_URL]
+        E4[NASTECH_VARIANT]
+        E5[NASTECH_EXPERIMENTAL]
+        E6[NASTECH_DISABLE_CAFFEINATE]
     end
 
     E1 -.-> settings & access & daemon & logs
 ```
 
-Local state lives under `~/.happy` (or `HAPPY_HOME_DIR`):
+Local state lives under `~/.nastech` (or `NASTECH_HOME_DIR`):
 - `settings.json`: onboarding and profile settings (validated/migrated).
 - `access.key`: local key material for encryption/auth.
 - `daemon.state.json`: daemon PID + control port + version.
 - `logs/`: CLI/daemon logs.
 
 Configuration lives in `src/configuration.ts`:
-- `NASTECH_SERVER_URL` and `HAPPY_WEBAPP_URL` override defaults.
-- `HAPPY_VARIANT`, `HAPPY_EXPERIMENTAL`, `HAPPY_DISABLE_CAFFEINATE` control behavior.
+- `NASTECH_SERVER_URL` and `NASTECH_WEBAPP_URL` override defaults.
+- `NASTECH_VARIANT`, `NASTECH_EXPERIMENTAL`, `NASTECH_DISABLE_CAFFEINATE` control behavior.
 
 ## API client architecture
 

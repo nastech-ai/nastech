@@ -402,7 +402,7 @@ const MyComponent = () => {
 - store app pages in @sources/app/(app)/
 - use ItemList for most containers for UI, if it is not custom like chat one.
 - Always use expo-router api, not react-navigation one.
-- Always try to use "useHappyAction" from @sources/hooks/useHappyAction.ts if you need to run some async operation, do not handle errors, etc - it is handled automatically.
+- Always try to use "useNasTechAction" from @sources/hooks/useNasTechAction.ts if you need to run some async operation, do not handle errors, etc - it is handled automatically.
 - Never use unistyles for expo-image, use classical one
 - Always use "Avatar" for avatars
 - No backward compatibliity ever

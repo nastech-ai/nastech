@@ -1,6 +1,6 @@
 # Backend Architecture
 
-This document describes the Happy backend structure as implemented in `packages/nastech-server`. It focuses on how the server is wired, how data flows through the system, and which subsystems handle which responsibilities.
+This document describes the NasTech backend structure as implemented in `packages/nastech-server`. It focuses on how the server is wired, how data flows through the system, and which subsystems handle which responsibilities.
 
 ## System overview
 

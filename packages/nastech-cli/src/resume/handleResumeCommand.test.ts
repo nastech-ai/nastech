@@ -35,9 +35,9 @@ describe('buildResumeLaunch', () => {
                 codexThreadId: '019ccca5-726b-7c61-b914-16de27dfab6e',
                 host: 'localhost',
                 homeDir: '/tmp',
-                happyHomeDir: '/tmp/.nastech',
-                happyLibDir: '/tmp/nastech',
-                happyToolsDir: '/tmp/nastech/tools',
+                nastechHomeDir: '/tmp/.nastech',
+                nastechLibDir: '/tmp/nastech',
+                nastechToolsDir: '/tmp/nastech/tools',
             },
         })).toEqual({
             cwd: '/tmp/p1-control-flow',
@@ -55,9 +55,9 @@ describe('buildResumeLaunch', () => {
                 claudeSessionId: '93a9705e-bc6a-406d-8dce-8acc014dedbd',
                 host: 'localhost',
                 homeDir: '/tmp',
-                happyHomeDir: '/tmp/.nastech',
-                happyLibDir: '/tmp/nastech',
-                happyToolsDir: '/tmp/nastech/tools',
+                nastechHomeDir: '/tmp/.nastech',
+                nastechLibDir: '/tmp/nastech',
+                nastechToolsDir: '/tmp/nastech/tools',
             },
         })).toEqual({
             cwd: '/tmp/repo',
@@ -74,9 +74,9 @@ describe('buildResumeLaunch', () => {
                 flavor: 'gemini',
                 host: 'localhost',
                 homeDir: '/tmp',
-                happyHomeDir: '/tmp/.nastech',
-                happyLibDir: '/tmp/nastech',
-                happyToolsDir: '/tmp/nastech/tools',
+                nastechHomeDir: '/tmp/.nastech',
+                nastechLibDir: '/tmp/nastech',
+                nastechToolsDir: '/tmp/nastech/tools',
             },
         })).toThrow('NasTech session session-3 uses unsupported flavor "gemini".');
     });

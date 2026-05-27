@@ -1,7 +1,7 @@
 import { AuthCredentials } from '@/auth/tokenStorage';
 import { backoff } from '@/utils/time';
 import { getServerUrl } from './serverConfig';
-import { getHappyClientId } from './apiSocket';
+import { getNasTechClientId } from './apiSocket';
 
 export interface UsageDataPoint {
     timestamp: number;
@@ -36,7 +36,7 @@ export async function queryUsage(
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             },
             body: JSON.stringify(params)
         });

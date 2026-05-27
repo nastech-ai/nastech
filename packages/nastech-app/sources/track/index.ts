@@ -58,7 +58,7 @@ export function trackMessageSent(source: MessageSentSource, metadata?: Metadata 
             : metadata?.startedBy === 'terminal' || metadata?.startedFromDaemon === false
                 ? 'cli'
                 : null,
-        happy_cli_version: metadata?.version ?? null,
+        nastech_cli_version: metadata?.version ?? null,
         ota_version: Updates.updateId ?? null,
         ota_runtime_version: Updates.runtimeVersion
             ?? (typeof Constants.expoConfig?.runtimeVersion === 'string' ? Constants.expoConfig.runtimeVersion : null),

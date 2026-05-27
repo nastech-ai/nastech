@@ -85,9 +85,9 @@ function makeSession() {
             path: '/tmp',
             host: 'localhost',
             homeDir: '/home/user',
-            happyHomeDir: '/home/user/.nastech',
-            happyLibDir: '/home/user/.nastech/lib',
-            happyToolsDir: '/home/user/.nastech/tools'
+            nastechHomeDir: '/home/user/.nastech',
+            nastechLibDir: '/home/user/.nastech/lib',
+            nastechToolsDir: '/home/user/.nastech/tools'
         },
         metadataVersion: 0,
         agentState: null,

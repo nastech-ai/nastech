@@ -9,7 +9,7 @@ vi.mock('./serverConfig', () => ({
 
 // Mock apiSocket to avoid pulling React Native modules into this unit test.
 vi.mock('./apiSocket', () => ({
-    getHappyClientId: () => 'test-client'
+    getNasTechClientId: () => 'test-client'
 }));
 
 // Mock backoff utility

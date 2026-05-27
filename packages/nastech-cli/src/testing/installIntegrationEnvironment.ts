@@ -14,7 +14,7 @@ type IntegrationEnvironmentProfile = {
 
 declare global {
     // eslint-disable-next-line no-var
-    var __happyIntegrationEnv: IntegrationEnvironment | undefined;
+    var __nastechIntegrationEnv: IntegrationEnvironment | undefined;
 }
 
 export async function installIntegrationEnvironment(profile: IntegrationEnvironmentProfile) {
@@ -29,7 +29,7 @@ export async function installIntegrationEnvironment(profile: IntegrationEnvironm
 
     const env = await createIntegrationEnvironment(profile);
     applyEnvironmentToProcess(env);
-    globalThis.__happyIntegrationEnv = env;
+    globalThis.__nastechIntegrationEnv = env;
 
     afterAll(async () => {
         try {
@@ -43,8 +43,8 @@ export async function installIntegrationEnvironment(profile: IntegrationEnvironm
                 }
             }
 
-            if (globalThis.__happyIntegrationEnv?.name === env.name) {
-                globalThis.__happyIntegrationEnv = undefined;
+            if (globalThis.__nastechIntegrationEnv?.name === env.name) {
+                globalThis.__nastechIntegrationEnv = undefined;
             }
         }
     });

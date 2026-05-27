@@ -7,19 +7,19 @@ Free. Open source. Code anywhere.
 ## Installation
 
 ```bash
-npm install -g happy
+npm install -g nastech
 ```
 
-> Migrated from the `happy-coder` package. Thanks to [@franciscop](https://github.com/franciscop) for donating the `happy` package name!
+> Migrated from the `nastech-coder` package. Thanks to [@franciscop](https://github.com/franciscop) for donating the `nastech` package name!
 
 ## Usage
 
 ### Claude Code (default)
 
 ```bash
-happy
+nastech
 # or
-happy claude
+nastech claude
 ```
 
 This will:
@@ -31,13 +31,13 @@ This will:
 ### More agents
 
 ```
-happy codex
-happy gemini
-happy openclaw
+nastech codex
+nastech gemini
+nastech openclaw
 
 # or any ACP-compatible CLI
-happy acp opencode
-happy acp -- custom-agent --flag
+nastech acp opencode
+nastech acp -- custom-agent --flag
 ```
 
 ## Daemon
@@ -45,27 +45,27 @@ happy acp -- custom-agent --flag
 The daemon is a background service that stays running on your machine. It lets you spawn and manage coding sessions remotely — from your phone or the web app — without needing an open terminal.
 
 ```bash
-happy daemon start
-happy daemon stop
-happy daemon status
-happy daemon list
+nastech daemon start
+nastech daemon stop
+nastech daemon status
+nastech daemon list
 ```
 
-The daemon starts automatically when you run `happy`, so you usually don't need to manage it manually.
+The daemon starts automatically when you run `nastech`, so you usually don't need to manage it manually.
 
 ### Keeping the daemon running across reboots
 
-If you want the daemon to come back automatically after a reboot — without opening a `happy` session first — start it from your shell profile so it inherits your normal user session context (PATH, keychain access, OAuth credentials):
+If you want the daemon to come back automatically after a reboot — without opening a `nastech` session first — start it from your shell profile so it inherits your normal user session context (PATH, keychain access, OAuth credentials):
 
 ```bash
 # ~/.zshrc or ~/.bashrc
-if [[ -o interactive ]] && [[ -z "$HAPPY_DAEMON_CHECKED" ]]; then
-    export HAPPY_DAEMON_CHECKED=1
+if [[ -o interactive ]] && [[ -z "$NASTECH_DAEMON_CHECKED" ]]; then
+    export NASTECH_DAEMON_CHECKED=1
     () {
-        local state=$HOME/.happy/daemon.state.json
+        local state=$HOME/.nastech/daemon.state.json
         local pid=$(grep -oE '"pid"[[:space:]]*:[[:space:]]*[0-9]+' "$state" 2>/dev/null | grep -oE '[0-9]+')
         if [[ -z "$pid" ]] || ! kill -0 "$pid" 2>/dev/null; then
-            happy daemon start >/dev/null 2>&1
+            nastech daemon start >/dev/null 2>&1
         fi
     } &!
 fi
@@ -78,8 +78,8 @@ The first interactive shell after a reboot triggers the start; subsequent shells
 ## Authentication
 
 ```bash
-happy auth login
-happy auth logout
+nastech auth login
+nastech auth logout
 ```
 
 NasTech uses cryptographic key pairs for authentication — your private key stays on your machine. All session data is end-to-end encrypted before leaving your device.
@@ -87,24 +87,24 @@ NasTech uses cryptographic key pairs for authentication — your private key sta
 To connect third-party agent APIs:
 
 ```bash
-happy connect gemini
-happy connect claude
-happy connect codex
-happy connect status
+nastech connect gemini
+nastech connect claude
+nastech connect codex
+nastech connect status
 ```
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `happy` | Start Claude Code session (default) |
-| `happy codex` | Start Codex mode |
-| `happy gemini` | Start Gemini CLI session |
-| `happy openclaw` | Start OpenClaw session |
-| `happy acp` | Start any ACP-compatible agent |
-| `happy resume <id>` | Resume a previous session |
-| `happy notify` | Send push notification to your devices |
-| `happy doctor` | Diagnostics & troubleshooting |
+| `nastech` | Start Claude Code session (default) |
+| `nastech codex` | Start Codex mode |
+| `nastech gemini` | Start Gemini CLI session |
+| `nastech openclaw` | Start OpenClaw session |
+| `nastech acp` | Start any ACP-compatible agent |
+| `nastech resume <id>` | Resume a previous session |
+| `nastech notify` | Send push notification to your devices |
+| `nastech doctor` | Diagnostics & troubleshooting |
 
 ---
 
@@ -115,19 +115,19 @@ happy connect status
 | Variable | Description |
 |----------|-------------|
 | `NASTECH_SERVER_URL` | Custom server URL (default: `https://api.nastech.workers.dev`) |
-| `HAPPY_WEBAPP_URL` | Custom web app URL (default: `https://ba.nastech.workers.dev`) |
-| `NASTECH_HOME_DIR` | Custom home directory for Happy data (default: `~/.happy`) |
-| `HAPPY_DISABLE_CAFFEINATE` | Disable macOS sleep prevention |
-| `HAPPY_EXPERIMENTAL` | Enable experimental features |
+| `NASTECH_WEBAPP_URL` | Custom web app URL (default: `https://ba.nastech.workers.dev`) |
+| `NASTECH_HOME_DIR` | Custom home directory for NasTech data (default: `~/.nastech`) |
+| `NASTECH_DISABLE_CAFFEINATE` | Disable macOS sleep prevention |
+| `NASTECH_EXPERIMENTAL` | Enable experimental features |
 
 ### Sandbox (experimental)
 
 NasTech can run agents inside an OS-level sandbox to restrict file system and network access.
 
 ```bash
-happy sandbox configure
-happy sandbox status
-happy sandbox disable
+nastech sandbox configure
+nastech sandbox status
+nastech sandbox disable
 ```
 
 ### Building from source
@@ -136,7 +136,7 @@ happy sandbox disable
 git clone https://github.com/nastech-ai/nastech
 cd nastech-cli
 yarn install
-yarn workspace happy cli --help
+yarn workspace nastech cli --help
 ```
 
 ## Requirements
@@ -144,7 +144,7 @@ yarn workspace happy cli --help
 - Node.js >= 20.0.0
 - For Claude: `claude` CLI installed & logged in
 - For Codex: `codex` CLI installed & logged in
-- For Gemini: `npm install -g @google/gemini-cli` + `happy connect gemini`
+- For Gemini: `npm install -g @google/gemini-cli` + `nastech connect gemini`
 
 ## License
 

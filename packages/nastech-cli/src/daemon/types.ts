@@ -18,8 +18,8 @@ export interface SessionEncryptionData {
  */
 export interface TrackedSession {
   startedBy: 'daemon' | string;
-  happySessionId?: string;
-  happySessionMetadataFromLocalWebhook?: Metadata;
+  nastechSessionId?: string;
+  nastechSessionMetadataFromLocalWebhook?: Metadata;
   encryption?: SessionEncryptionData;
   pid: number;
   childProcess?: ChildProcess;

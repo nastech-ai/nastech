@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 OVERLAY="$SCRIPT_DIR/../overlays/local"
 
-echo "=== Happy Local Deployment (minikube) ==="
+echo "=== NasTech Local Deployment (minikube) ==="
 
 # 1. Ensure minikube is running
 if ! minikube status --format='{{.Host}}' 2>/dev/null | grep -q Running; then
@@ -28,13 +28,13 @@ echo "Running database migrations..."
 kubectl kustomize "$OVERLAY" --load-restrictor=LoadRestrictionsNone | kubectl apply -f -
 
 echo "Waiting for postgres to be ready..."
-kubectl wait --for=condition=ready pod -l app=happy-postgres --timeout=60s
+kubectl wait --for=condition=ready pod -l app=nastech-postgres --timeout=60s
 
 # Run migrations via a one-shot job
-kubectl run happy-migrate --rm -i --restart=Never \
+kubectl run nastech-migrate --rm -i --restart=Never \
     --image=nastech-server:local \
     --image-pull-policy=Never \
-    --env="DATABASE_URL=postgresql://happy:happy@happy-postgres:5432/happy" \
+    --env="DATABASE_URL=postgresql://nastech:nastech@nastech-postgres:5432/nastech" \
     -- sh -c "cd /repo && npx prisma migrate deploy --schema=packages/nastech-server/prisma/schema.prisma" \
     2>/dev/null || true
 

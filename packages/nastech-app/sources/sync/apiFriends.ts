@@ -1,7 +1,7 @@
 import { AuthCredentials } from '@/auth/tokenStorage';
 import { backoff } from '@/utils/time';
 import { getServerUrl } from './serverConfig';
-import { getHappyClientId } from './apiSocket';
+import { getNasTechClientId } from './apiSocket';
 import {
     UserProfile,
     UserResponse,
@@ -28,7 +28,7 @@ export async function searchUsersByUsername(
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${credentials.token}`,
-                    'X-NasTech-Client': getHappyClientId(),
+                    'X-NasTech-Client': getNasTechClientId(),
                 }
             }
         );
@@ -67,7 +67,7 @@ export async function getUserProfile(
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${credentials.token}`,
-                    'X-NasTech-Client': getHappyClientId(),
+                    'X-NasTech-Client': getNasTechClientId(),
                 }
             }
         );
@@ -122,7 +122,7 @@ export async function sendFriendRequest(
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             },
             body: JSON.stringify({ uid: recipientId })
         });
@@ -164,7 +164,7 @@ export async function getFriendsList(
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
 
@@ -198,7 +198,7 @@ export async function removeFriend(
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             },
             body: JSON.stringify({ uid: friendId })
         });

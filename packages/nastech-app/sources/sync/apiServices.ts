@@ -1,7 +1,7 @@
 import { AuthCredentials } from '@/auth/tokenStorage';
 import { backoff } from '@/utils/time';
 import { getServerUrl } from './serverConfig';
-import { getHappyClientId } from './apiSocket';
+import { getNasTechClientId } from './apiSocket';
 
 /**
  * Connect a service to the user's account
@@ -19,7 +19,7 @@ export async function connectService(
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             },
             body: JSON.stringify({ token: JSON.stringify(token) })
         });
@@ -46,7 +46,7 @@ export async function disconnectService(credentials: AuthCredentials, service: s
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${credentials.token}`,
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
 

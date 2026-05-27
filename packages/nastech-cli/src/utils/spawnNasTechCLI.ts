@@ -84,7 +84,7 @@ export function spawnNasTechCLI(args: string[], options: SpawnOptions = {}): Chi
   // for when "nastech" was started and don't care about the underlying node process
   // details and flags we use to achieve the same result.
   const fullCommand = `nastech ${args.join(' ')}`;
-  logger.debug(`[SPAWN HAPPY CLI] Spawning: ${fullCommand} in ${directory}`);
+  logger.debug(`[SPAWN NASTECH CLI] Spawning: ${fullCommand} in ${directory}`);
   
   // Use the same Node.js flags that the wrapper script uses
   const nodeArgs = [
@@ -97,7 +97,7 @@ export function spawnNasTechCLI(args: string[], options: SpawnOptions = {}): Chi
   // Sanity check of the entrypoint path exists
   if (!existsSync(entrypoint)) {
     const errorMessage = `Entrypoint ${entrypoint} does not exist`;
-    logger.debug(`[SPAWN HAPPY CLI] ${errorMessage}`);
+    logger.debug(`[SPAWN NASTECH CLI] ${errorMessage}`);
     throw new Error(errorMessage);
   }
   

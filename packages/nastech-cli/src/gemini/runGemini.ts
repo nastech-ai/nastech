@@ -685,7 +685,7 @@ export async function runGemini(opts: {
         // Track change_title completion
         if (msg.toolName === 'change_title' || 
             msg.callId?.includes('change_title') ||
-            msg.toolName === 'happy__change_title') {
+            msg.toolName === 'nastech__change_title') {
           changeTitleCompleted = true;
           logger.debug('[gemini] change_title completed');
         }
@@ -1061,7 +1061,7 @@ export async function runGemini(opts: {
         // Track if this prompt contains change_title instruction
         // If so, don't send task_complete until change_title is completed
         pendingChangeTitle = message.message.includes('change_title') || 
-                             message.message.includes('happy__change_title');
+                             message.message.includes('nastech__change_title');
         changeTitleCompleted = false;
         
         if (!geminiBackend || !acpSessionId) {

@@ -17,13 +17,13 @@ export function startDaemonControlServer({
   stopSession,
   spawnSession,
   requestShutdown,
-  onHappySessionWebhook
+  onNasTechSessionWebhook
 }: {
   getChildren: () => TrackedSession[];
   stopSession: (sessionId: string) => boolean;
   spawnSession: (options: SpawnSessionOptions) => Promise<SpawnSessionResult>;
   requestShutdown: () => void;
-  onHappySessionWebhook: (sessionId: string, metadata: Metadata, encryption?: SessionEncryptionData) => void;
+  onNasTechSessionWebhook: (sessionId: string, metadata: Metadata, encryption?: SessionEncryptionData) => void;
 }): Promise<{ port: number; stop: () => Promise<void> }> {
   return new Promise((resolve) => {
     const app = fastify({
@@ -71,7 +71,7 @@ export function startDaemonControlServer({
         };
       }
 
-      onHappySessionWebhook(sessionId, metadata, encryptionData);
+      onNasTechSessionWebhook(sessionId, metadata, encryptionData);
 
       return { status: 'ok' as const };
     });
@@ -83,7 +83,7 @@ export function startDaemonControlServer({
           200: z.object({
             children: z.array(z.object({
               startedBy: z.string(),
-              happySessionId: z.string(),
+              nastechSessionId: z.string(),
               pid: z.number()
             }))
           })
@@ -94,10 +94,10 @@ export function startDaemonControlServer({
       logger.debug(`[CONTROL SERVER] Listing ${children.length} sessions`);
       return { 
         children: children
-          .filter(child => child.happySessionId !== undefined)
+          .filter(child => child.nastechSessionId !== undefined)
           .map(child => ({
             startedBy: child.startedBy,
-            happySessionId: child.happySessionId!,
+            nastechSessionId: child.nastechSessionId!,
             pid: child.pid
           }))
       }

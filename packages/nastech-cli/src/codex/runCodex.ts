@@ -74,7 +74,7 @@ export async function runCodex(opts: {
         console.error('\x1b[1mOption 2 - Homebrew (macOS):\x1b[0m');
         console.error('  \x1b[36mbrew install --cask codex\x1b[0m\n');
         console.error('Alternatively, use Claude Code:');
-        console.error('  \x1b[36mhappy claude\x1b[0m\n');
+        console.error('  \x1b[36mnastech claude\x1b[0m\n');
         process.exit(1);
     }
 
@@ -720,10 +720,10 @@ export async function runCodex(opts: {
             try {
                 // Map permission mode to approval policy and sandbox.
                 // With app-server, these are per-turn — no restart needed on mode change.
-                const sandboxManagedByHappy = client.sandboxEnabled;
+                const sandboxManagedByNasTech = client.sandboxEnabled;
                 const executionPolicy = resolveCodexExecutionPolicy(
                     message.mode.permissionMode,
-                    sandboxManagedByHappy,
+                    sandboxManagedByNasTech,
                 );
 
                 // Start thread on first turn (thread persists across mode changes)

@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { apiSocket, getCurrentAppState, getHappyClientId } from '@/sync/apiSocket';
+import { apiSocket, getCurrentAppState, getNasTechClientId } from '@/sync/apiSocket';
 import { notifyUnreadMessage } from '@/sync/webTabTitle';
 import { AuthCredentials } from '@/auth/tokenStorage';
 import { Encryption } from '@/sync/encryption/encryption';
@@ -901,7 +901,7 @@ class Sync {
             headers: {
                 'Authorization': `Bearer ${this.credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
 
@@ -1276,7 +1276,7 @@ class Sync {
             headers: {
                 'Authorization': `Bearer ${this.credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
 
@@ -1505,7 +1505,7 @@ class Sync {
                     headers: {
                         'Authorization': `Bearer ${this.credentials.token}`,
                         'Content-Type': 'application/json',
-                        'X-NasTech-Client': getHappyClientId(),
+                        'X-NasTech-Client': getNasTechClientId(),
                     }
                 });
                 const data = await response.json() as {
@@ -1570,7 +1570,7 @@ class Sync {
             headers: {
                 'Authorization': `Bearer ${this.credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
         if (!response.ok) {
@@ -1616,7 +1616,7 @@ class Sync {
             headers: {
                 'Authorization': `Bearer ${this.credentials.token}`,
                 'Content-Type': 'application/json',
-                'X-NasTech-Client': getHappyClientId(),
+                'X-NasTech-Client': getNasTechClientId(),
             }
         });
 
@@ -1665,7 +1665,7 @@ class Sync {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-NasTech-Client': getHappyClientId(),
+                    'X-NasTech-Client': getNasTechClientId(),
                 },
                 body: JSON.stringify({
                     platform,

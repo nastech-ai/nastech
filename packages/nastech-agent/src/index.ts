@@ -97,7 +97,7 @@ function ensureMachineCanResume(machine: DecryptedMachine): void {
     const metadata = (machine.metadata ?? {}) as {
         resumeSupport?: {
             rpcAvailable?: unknown;
-            happyAgentAuthenticated?: unknown;
+            nastechAgentAuthenticated?: unknown;
         };
     };
 
@@ -105,7 +105,7 @@ function ensureMachineCanResume(machine: DecryptedMachine): void {
         return;
     }
 
-    if (metadata.resumeSupport?.happyAgentAuthenticated === false) {
+    if (metadata.resumeSupport?.nastechAgentAuthenticated === false) {
         throw new Error('Resume is unavailable on this machine. Run `nastech-agent auth login` in that machine environment first.');
     }
 

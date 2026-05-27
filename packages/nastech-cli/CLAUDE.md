@@ -141,20 +141,20 @@ User interface components.
 ## Starting the Daemon
 ```bash
 # From the nastech-cli directory:
-./bin/happy.mjs daemon start
+./bin/nastech.mjs daemon start
 
 # With custom server URL (for local development):
-NASTECH_SERVER_URL=http://localhost:3005 ./bin/happy.mjs daemon start
+NASTECH_SERVER_URL=http://localhost:3005 ./bin/nastech.mjs daemon start
 
 # Stop the daemon:
-./bin/happy.mjs daemon stop
+./bin/nastech.mjs daemon stop
 
 # Check daemon status:
-./bin/happy.mjs daemon status
+./bin/nastech.mjs daemon status
 ```
 
 ## Daemon Logs
-- Daemon logs are stored in `~/.happy-dev/logs/` (or `$NASTECH_HOME_DIR/logs/`)
+- Daemon logs are stored in `~/.nastech-dev/logs/` (or `$NASTECH_HOME_DIR/logs/`)
 - Named with format: `YYYY-MM-DD-HH-MM-SS-daemon.log`
 
 # Session Forking `claude` and sdk behavior

@@ -235,7 +235,7 @@ The project includes a multi-stage Dockerfile:
 - CLI: Use `pnpm dev:local-server` (NOT `pnpm dev`) to load `.env.dev-local-server`
 - Server: Use `pnpm dev` to start with proper env files
 - **Tell**: Wrong server URL = check `NASTECH_SERVER_URL` env var
-- **Tell**: Wrong home dir = check `NASTECH_HOME_DIR` (should be `~/.happy-dev` for local)
+- **Tell**: Wrong home dir = check `NASTECH_HOME_DIR` (should be `~/.nastech-dev` for local)
 
 ### Quick Diagnostic Commands
 

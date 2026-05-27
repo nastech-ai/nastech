@@ -21,7 +21,7 @@ type MachineMetadata = {
     host?: string;
     platform?: string;
     homeDir?: string;
-    happyCliVersion?: string;
+    nastechCliVersion?: string;
     [key: string]: unknown;
 };
 

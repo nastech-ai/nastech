@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   mockLoggerDebug: vi.fn(),
-  mockIsDaemonRunningCurrentlyInstalledHappyVersion: vi.fn(),
+  mockIsDaemonRunningCurrentlyInstalledNasTechVersion: vi.fn(),
   mockCheckIfDaemonRunningAndCleanupStaleState: vi.fn(),
   mockSpawnNasTechCLI: vi.fn(),
 }))
@@ -14,7 +14,7 @@ vi.mock('@/ui/logger', () => ({
 }))
 
 vi.mock('./controlClient', () => ({
-  isDaemonRunningCurrentlyInstalledHappyVersion: mocks.mockIsDaemonRunningCurrentlyInstalledHappyVersion,
+  isDaemonRunningCurrentlyInstalledNasTechVersion: mocks.mockIsDaemonRunningCurrentlyInstalledNasTechVersion,
   checkIfDaemonRunningAndCleanupStaleState: mocks.mockCheckIfDaemonRunningAndCleanupStaleState,
 }))
 
@@ -34,7 +34,7 @@ describe('ensureDaemonRunning', () => {
   })
 
   it('returns without spawning when the daemon is already running', async () => {
-    mocks.mockIsDaemonRunningCurrentlyInstalledHappyVersion.mockResolvedValue(true)
+    mocks.mockIsDaemonRunningCurrentlyInstalledNasTechVersion.mockResolvedValue(true)
 
     await ensureDaemonRunning()
 
@@ -47,7 +47,7 @@ describe('ensureDaemonRunning', () => {
 
   it('starts the daemon and waits for readiness when the installed version is not running', async () => {
     const mockUnref = vi.fn()
-    mocks.mockIsDaemonRunningCurrentlyInstalledHappyVersion.mockResolvedValue(false)
+    mocks.mockIsDaemonRunningCurrentlyInstalledNasTechVersion.mockResolvedValue(false)
     mocks.mockSpawnNasTechCLI.mockReturnValue({
       unref: mockUnref,
     })

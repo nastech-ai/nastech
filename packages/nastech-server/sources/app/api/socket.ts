@@ -114,7 +114,7 @@ export function startSocket(app: Fastify) {
         socket.data.clientType = clientType;
         socket.data.sessionId = sessionId;
         socket.data.machineId = machineId;
-        socket.data.happyClient = socket.handshake.auth.happyClient as string
+        socket.data.nastechClient = socket.handshake.auth.nastechClient as string
             || socket.handshake.headers['x-nastech-client'] as string
             || undefined;
         next();
@@ -131,7 +131,7 @@ export function startSocket(app: Fastify) {
 
         // Store connection based on type
         const metadata = { clientType: clientType || 'user-scoped', sessionId, machineId };
-        const happyClient = socket.data.happyClient as string | undefined;
+        const nastechClient = socket.data.nastechClient as string | undefined;
         let connection: ClientConnection;
         if (metadata.clientType === 'session-scoped' && sessionId) {
             connection = {
@@ -139,7 +139,7 @@ export function startSocket(app: Fastify) {
                 socket,
                 userId,
                 sessionId,
-                happyClient
+                nastechClient
             };
         } else if (metadata.clientType === 'machine-scoped' && machineId) {
             connection = {
@@ -147,14 +147,14 @@ export function startSocket(app: Fastify) {
                 socket,
                 userId,
                 machineId,
-                happyClient
+                nastechClient
             };
         } else {
             connection = {
                 connectionType: 'user-scoped',
                 socket,
                 userId,
-                happyClient
+                nastechClient
             };
         }
         eventRouter.addConnection(userId, connection);

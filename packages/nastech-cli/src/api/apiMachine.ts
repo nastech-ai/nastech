@@ -362,7 +362,7 @@ export class ApiMachineClient {
                 token: this.token,
                 clientType: 'machine-scoped' as const,
                 machineId: this.machine.id,
-                happyClient: `cli-daemon/${configuration.currentCliVersion}`
+                nastechClient: `cli-daemon/${configuration.currentCliVersion}`
             },
             path: '/v1/updates',
             reconnection: false,
@@ -455,7 +455,7 @@ export class ApiMachineClient {
             const cliAvailabilityChanged = !prev || prev.claude !== newAvailability.claude || prev.codex !== newAvailability.codex || prev.gemini !== newAvailability.gemini || prev.openclaw !== newAvailability.openclaw;
             const resumeSupportChanged = !prevResume
                 || prevResume.rpcAvailable !== newResumeSupport.rpcAvailable
-                || prevResume.happyAgentAuthenticated !== newResumeSupport.happyAgentAuthenticated;
+                || prevResume.nastechAgentAuthenticated !== newResumeSupport.nastechAgentAuthenticated;
 
             if (cliAvailabilityChanged || resumeSupportChanged) {
                 this.lastKnownCLIAvailability = newAvailability;

@@ -6,7 +6,7 @@ import {
 } from '@nastech-ai/nastech-wire';
 import { AuthCredentials } from '@/auth/tokenStorage';
 import { getServerUrl } from './serverConfig';
-import { getHappyClientId } from './apiSocket';
+import { getNasTechClientId } from './apiSocket';
 import { config } from '@/config';
 
 export type { VoiceConversationResponse, VoiceUsageResponse };
@@ -28,7 +28,7 @@ export async function fetchVoiceCredentials(
         headers: {
             'Authorization': `Bearer ${credentials.token}`,
             'Content-Type': 'application/json',
-            'X-NasTech-Client': getHappyClientId(),
+            'X-NasTech-Client': getNasTechClientId(),
         },
         body: JSON.stringify({
             agentId
@@ -51,7 +51,7 @@ export async function fetchVoiceUsage(
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${credentials.token}`,
-            'X-NasTech-Client': getHappyClientId(),
+            'X-NasTech-Client': getNasTechClientId(),
         },
     });
 

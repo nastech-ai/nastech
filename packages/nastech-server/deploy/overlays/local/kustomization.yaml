@@ -33,7 +33,7 @@ patches:
             - name: handy
               env:
               - name: S3_PUBLIC_URL
-                value: http://localhost:9000/happy
+                value: http://localhost:9000/nastech
 
   # NodePort so tests connect through kube-proxy (real load balancing).
   # kubectl port-forward tunnels to ONE pod — when that pod dies,

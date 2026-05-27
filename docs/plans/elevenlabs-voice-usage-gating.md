@@ -45,7 +45,7 @@ The app does not currently have an ElevenLabs API secret. Client config only car
 
 Implement a stateless-at-runtime preflight check that uses ElevenLabs as the system of record:
 
-1. Derive a stable pseudonymous ElevenLabs `user_id` from the Happy user ID.
+1. Derive a stable pseudonymous ElevenLabs `user_id` from the NasTech user ID.
 2. Before issuing a conversation token, query ElevenLabs conversation history for that `user_id`.
 3. Read only the first page.
 4. Sum `call_duration_secs` across the returned conversations.
@@ -56,9 +56,9 @@ Implement a stateless-at-runtime preflight check that uses ElevenLabs as the sys
 
 Use a stable pseudonymous ID, not a random nonce. Recommended shape:
 
-`elevenUserId = "u_" + base64url(HMAC_SHA256(APP_SECRET, happyUserId))`
+`elevenUserId = "u_" + base64url(HMAC_SHA256(APP_SECRET, nastechUserId))`
 
-This keeps the join key stable across sessions without exposing the raw Happy account ID to ElevenLabs.
+This keeps the join key stable across sessions without exposing the raw NasTech account ID to ElevenLabs.
 
 ## External APIs
 
@@ -97,7 +97,7 @@ POST /v1/voice/token
   v
 Server authenticates JWT
   |
-  +--> request.userId = Happy account id
+  +--> request.userId = NasTech account id
   |
   +--> derive stable elevenUserId from request.userId
   |

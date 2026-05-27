@@ -1,6 +1,6 @@
 # Integration Tests
 
-Stress tests that run against a real multi-replica Happy server on minikube.
+Stress tests that run against a real multi-replica NasTech server on minikube.
 
 ## Prerequisites
 
@@ -108,9 +108,9 @@ kubectl delete pod <pod-name> --grace-period=0
 kubectl rollout restart deployment/handy-server
 
 # Access Redis CLI
-kubectl exec -it happy-redis-0 -- redis-cli
+kubectl exec -it nastech-redis-0 -- redis-cli
 
 # Access MinIO console
-kubectl port-forward svc/happy-minio 9001:9001
+kubectl port-forward svc/nastech-minio 9001:9001
 # then open http://localhost:9001 (minioadmin/minioadmin)
 ```

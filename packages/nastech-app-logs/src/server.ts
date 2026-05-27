@@ -6,14 +6,14 @@ import { homedir } from 'node:os';
 const PORT = parseInt(process.env.PORT || '8787');
 
 // Resolve nastech home dir — same pattern as nastech-cli/src/configuration.ts
-let happyHome: string;
+let nastechHome: string;
 if (process.env.NASTECH_HOME_DIR) {
-    happyHome = process.env.NASTECH_HOME_DIR.replace(/^~/, homedir());
+    nastechHome = process.env.NASTECH_HOME_DIR.replace(/^~/, homedir());
 } else {
-    happyHome = join(homedir(), '.nastech');
+    nastechHome = join(homedir(), '.nastech');
 }
 
-const logsDir = join(happyHome, 'app-logs');
+const logsDir = join(nastechHome, 'app-logs');
 mkdirSync(logsDir, { recursive: true });
 
 const now = new Date();

@@ -116,7 +116,7 @@ async function handleAuthLogin(args: string[]): Promise<void> {
 
 async function handleAuthLogout(): Promise<void> {
   // "auth logout will essentially clear the private key that originally came from the phone"
-  const nasTechDir = configuration.happyHomeDir;
+  const nasTechDir = configuration.nastechHomeDir;
 
   // Check if authenticated
   const credentials = await readCredentials();
@@ -192,7 +192,7 @@ async function handleAuthStatus(): Promise<void> {
   }
 
   // Data location
-  console.log(chalk.gray(`\n  Data directory: ${configuration.happyHomeDir}`));
+  console.log(chalk.gray(`\n  Data directory: ${configuration.nastechHomeDir}`));
 
   // Daemon status
   try {

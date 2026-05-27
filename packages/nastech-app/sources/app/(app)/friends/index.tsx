@@ -10,7 +10,7 @@ import { Modal } from '@/modal';
 import { t } from '@/text';
 import { ItemList } from '@/components/ItemList';
 import { ItemGroup } from '@/components/ItemGroup';
-import { useHappyAction } from '@/hooks/useHappyAction';
+import { useNasTechAction } from '@/hooks/useNasTechAction';
 import { useRouter } from 'expo-router';
 
 export default function FriendsScreen() {
@@ -21,7 +21,7 @@ export default function FriendsScreen() {
     const requestedFriends = useRequestedFriends();
     const [processingId, setProcessingId] = React.useState<string | null>(null);
 
-    const [acceptLoading, doAccept] = useHappyAction(async () => {
+    const [acceptLoading, doAccept] = useNasTechAction(async () => {
         if (!credentials || !processingId) return;
         
         const fromUserId = processingId;
@@ -41,7 +41,7 @@ export default function FriendsScreen() {
         setProcessingId(null);
     });
 
-    const [rejectLoading, doReject] = useHappyAction(async () => {
+    const [rejectLoading, doReject] = useNasTechAction(async () => {
         if (!credentials || !processingId) return;
         
         const fromUserId = processingId;
@@ -56,7 +56,7 @@ export default function FriendsScreen() {
         setProcessingId(null);
     });
 
-    const [removeLoading, doRemove] = useHappyAction(async () => {
+    const [removeLoading, doRemove] = useNasTechAction(async () => {
         if (!credentials || !processingId) return;
         
         const friendId = processingId;

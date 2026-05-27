@@ -11,9 +11,9 @@ function createBaseMetadata(): Metadata {
     path: '/repo',
     host: 'host',
     homeDir: '/home/user',
-    happyHomeDir: '/home/user/.nastech',
-    happyLibDir: '/repo/.nastech/lib',
-    happyToolsDir: '/repo/.nastech/tools',
+    nastechHomeDir: '/home/user/.nastech',
+    nastechLibDir: '/repo/.nastech/lib',
+    nastechToolsDir: '/repo/.nastech/tools',
   };
 }
 

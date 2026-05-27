@@ -422,7 +422,7 @@ describe.skipIf(!gatewayAvailable)('OpenClaw integration - daemon lifecycle', { 
 
     const sessions = await listDaemonSessions();
     const openclawSession = sessions.find(
-      (s: { happySessionId: string }) => s.happySessionId === spawnResult.sessionId,
+      (s: { nastechSessionId: string }) => s.nastechSessionId === spawnResult.sessionId,
     );
     expect(openclawSession).toBeDefined();
     expect(openclawSession.startedBy).toBe('daemon');
@@ -444,7 +444,7 @@ describe.skipIf(!gatewayAvailable)('OpenClaw integration - daemon lifecycle', { 
 
     const sessionsAfter = await listDaemonSessions();
     const stillTracked = sessionsAfter.find(
-      (s: { happySessionId: string }) => s.happySessionId === spawnResult.sessionId,
+      (s: { nastechSessionId: string }) => s.nastechSessionId === spawnResult.sessionId,
     );
     expect(stillTracked).toBeUndefined();
   });
@@ -502,7 +502,7 @@ describe.skipIf(!gatewayAvailable)('OpenClaw integration - daemon lifecycle', { 
 
     const sessions = await listDaemonSessions();
     const session2 = sessions.find(
-      (s: { happySessionId: string }) => s.happySessionId === result2.sessionId,
+      (s: { nastechSessionId: string }) => s.nastechSessionId === result2.sessionId,
     );
     expect(session2).toBeDefined();
 

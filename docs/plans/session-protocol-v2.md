@@ -46,7 +46,7 @@ These protocols are **complementary layers**, not competitors:
 - **ACP (Zed)** = editor-to-agent
 - **A2A** = agent-to-agent
 
-Happy sits in the **ACP layer** — we're a remote UI controlling coding agents. Zed's ACP is the closest match, but we have unique constraints (remote/encrypted transport, multiple agent backends, mobile UI).
+NasTech sits in the **ACP layer** — we're a remote UI controlling coding agents. Zed's ACP is the closest match, but we have unique constraints (remote/encrypted transport, multiple agent backends, mobile UI).
 
 ### What we take from each
 

@@ -34,7 +34,7 @@ type LinkFlow = {
     cancelled: boolean
 }
 
-type HappyEncryptionContext = {
+type NasTechEncryptionContext = {
     anonId: string
     contentPublicKey: Uint8Array
     contentSecretKey: Uint8Array
@@ -46,7 +46,7 @@ const port = parentPort
 const send = (m: NasTechWorkerMessage) => port.postMessage(m)
 
 let credentials: StoredCredentials | null = null
-let client: HappyAuthenticatedClient | null = null
+let client: NasTechAuthenticatedClient | null = null
 let linkFlow: LinkFlow | null = null
 let state: NasTechStateSnapshot = {
     status: 'starting',
@@ -56,20 +56,20 @@ let state: NasTechStateSnapshot = {
     updatedAt: Date.now(),
 }
 
-class HappyAuthenticatedClient {
+class NasTechAuthenticatedClient {
     private constructor(
         private readonly cfg: WorkerConfig,
         private readonly auth: StoredCredentials,
-        private readonly encryption: HappyEncryptionContext,
+        private readonly encryption: NasTechEncryptionContext,
     ) {}
 
     static async create(
         cfg: WorkerConfig,
         auth: StoredCredentials,
-    ): Promise<HappyAuthenticatedClient> {
+    ): Promise<NasTechAuthenticatedClient> {
         const secret = decodeBase64(auth.secret, 'base64url')
         const encryption = await createEncryptionContext(secret)
-        return new HappyAuthenticatedClient(cfg, auth, encryption)
+        return new NasTechAuthenticatedClient(cfg, auth, encryption)
     }
 
     snapshot() {
@@ -105,7 +105,7 @@ void boot()
 async function boot(): Promise<void> {
     try {
         credentials = await readCredentials()
-        client = credentials ? await HappyAuthenticatedClient.create(config, credentials) : null
+        client = credentials ? await NasTechAuthenticatedClient.create(config, credentials) : null
         setState(snapshotForCredentials(credentials))
     } catch (err) {
         setError(`Failed to load NasTech credentials: ${errString(err)}`)
@@ -264,11 +264,11 @@ async function storeAuthenticated(token: string, secret: Uint8Array): Promise<vo
         secret: encodeBase64(secret, 'base64url'),
     }
     await writeCredentials(credentials)
-    client = await HappyAuthenticatedClient.create(config, credentials)
+    client = await NasTechAuthenticatedClient.create(config, credentials)
     setState(snapshotForCredentials(credentials))
 }
 
-async function createEncryptionContext(masterSecret: Uint8Array): Promise<HappyEncryptionContext> {
+async function createEncryptionContext(masterSecret: Uint8Array): Promise<NasTechEncryptionContext> {
     const contentSeed = await deriveKey(masterSecret, 'NasTech EnCoder', ['content'])
     const contentSecretKey = libsodiumBoxSecretKeyFromSeed(contentSeed)
     const contentPublicKey = tweetnacl.box.keyPair.fromSecretKey(contentSecretKey).publicKey

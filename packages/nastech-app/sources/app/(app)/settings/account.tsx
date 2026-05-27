@@ -19,7 +19,7 @@ import { Switch } from '@/components/Switch';
 import { useConnectAccount } from '@/hooks/useConnectAccount';
 import { getDisplayName } from '@/sync/profile';
 import { Image } from 'expo-image';
-import { useHappyAction } from '@/hooks/useHappyAction';
+import { useNasTechAction } from '@/hooks/useNasTechAction';
 import { disconnectGitHub } from '@/sync/apiGithub';
 import { disconnectService } from '@/sync/apiServices';
 import { fetchPushTokens, type PushToken } from '@/sync/apiPush';
@@ -164,7 +164,7 @@ export default React.memo(() => {
     );
 
     // GitHub disconnection
-    const [disconnecting, handleDisconnectGitHub] = useHappyAction(async () => {
+    const [disconnecting, handleDisconnectGitHub] = useNasTechAction(async () => {
         const confirmed = await Modal.confirm(
             t('modals.disconnectGithub'),
             t('modals.disconnectGithubConfirm'),

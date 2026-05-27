@@ -17,7 +17,7 @@ import { spawnNasTechCLI } from '@/utils/spawnNasTechCLI';
 import { writeDaemonState, DaemonLocallyPersistedState, readDaemonState, acquireDaemonLock, releaseDaemonLock, readPersistedSessions, persistSession } from '@/persistence';
 import type { PersistedSession } from '@/persistence';
 
-import { cleanupDaemonState, isDaemonRunningCurrentlyInstalledHappyVersion, stopDaemon } from './controlClient';
+import { cleanupDaemonState, isDaemonRunningCurrentlyInstalledNasTechVersion, stopDaemon } from './controlClient';
 import { startDaemonControlServer } from './controlServer';
 import { statSync } from 'fs';
 import { join } from 'path';
@@ -42,10 +42,10 @@ const hostSuffix = process.env.NASTECH_VARIANT === 'dev' ? '-dev' : '';
 export const initialMachineMetadata: MachineMetadata = {
   host: os.hostname() + hostSuffix,
   platform: os.platform(),
-  happyCliVersion: packageJson.version,
+  nastechCliVersion: packageJson.version,
   homeDir: os.homedir(),
-  happyHomeDir: configuration.happyHomeDir,
-  happyLibDir: projectPath(),
+  nastechHomeDir: configuration.nastechHomeDir,
+  nastechLibDir: projectPath(),
   cliAvailability: detectCLIAvailability(),
   resumeSupport: { ...detectResumeSupport(), rpcAvailable: true },
 };
@@ -118,7 +118,7 @@ export async function startDaemon(): Promise<void> {
 
   // Check if already running
   // Check if running daemon version matches current CLI version
-  const runningDaemonVersionMatches = await isDaemonRunningCurrentlyInstalledHappyVersion();
+  const runningDaemonVersionMatches = await isDaemonRunningCurrentlyInstalledNasTechVersion();
   if (!runningDaemonVersionMatches) {
     // TODO: This hand-rolled self-restart path is awkward to reason about and awkward to test.
     // We should probably migrate this daemon to native system service management
@@ -164,8 +164,8 @@ export async function startDaemon(): Promise<void> {
     for (const [id, s] of Object.entries(persisted)) {
       sessionIdToFinishedSession.set(id, {
         startedBy: 'persisted',
-        happySessionId: id,
-        happySessionMetadataFromLocalWebhook: s.metadata,
+        nastechSessionId: id,
+        nastechSessionMetadataFromLocalWebhook: s.metadata,
         encryption: {
           encryptionKey: decodeBase64(s.encryptionKey),
           encryptionVariant: s.encryptionVariant,
@@ -187,7 +187,7 @@ export async function startDaemon(): Promise<void> {
     const getCurrentChildren = () => Array.from(pidToTrackedSession.values());
 
     // Handle webhook from nastech session reporting itself
-    const onHappySessionWebhook = (sessionId: string, sessionMetadata: Metadata, encryption?: SessionEncryptionData) => {
+    const onNasTechSessionWebhook = (sessionId: string, sessionMetadata: Metadata, encryption?: SessionEncryptionData) => {
       logger.debugLargeJson(`[DAEMON RUN] Session reported`, sessionMetadata);
 
       const pid = sessionMetadata.hostPid;
@@ -217,8 +217,8 @@ export async function startDaemon(): Promise<void> {
 
       if (existingSession && existingSession.startedBy === 'daemon') {
         // Update daemon-spawned session with reported data
-        existingSession.happySessionId = sessionId;
-        existingSession.happySessionMetadataFromLocalWebhook = sessionMetadata;
+        existingSession.nastechSessionId = sessionId;
+        existingSession.nastechSessionMetadataFromLocalWebhook = sessionMetadata;
         existingSession.encryption = encryption;
         logger.debug(`[DAEMON RUN] Updated daemon-spawned session ${sessionId} with metadata`);
 
@@ -233,8 +233,8 @@ export async function startDaemon(): Promise<void> {
         // New session started externally
         const trackedSession: TrackedSession = {
           startedBy: 'nastech directly - likely by user from terminal',
-          happySessionId: sessionId,
-          happySessionMetadataFromLocalWebhook: sessionMetadata,
+          nastechSessionId: sessionId,
+          nastechSessionMetadataFromLocalWebhook: sessionMetadata,
           encryption,
           pid
         };
@@ -453,7 +453,7 @@ export async function startDaemon(): Promise<void> {
             // Add to tracking map so webhook can find it later
             pidToTrackedSession.set(tmuxResult.pid, trackedSession);
 
-            // Wait for webhook to populate session with happySessionId (exact same as regular flow)
+            // Wait for webhook to populate session with nastechSessionId (exact same as regular flow)
             logger.debug(`[DAEMON RUN] Waiting for session webhook for PID ${tmuxResult.pid} (tmux)`);
 
             return new Promise((resolve) => {
@@ -470,10 +470,10 @@ export async function startDaemon(): Promise<void> {
               // Register awaiter for tmux session (exact same as regular flow)
               pidToAwaiter.set(tmuxResult.pid!, (completedSession) => {
                 clearTimeout(timeout);
-                logger.debug(`[DAEMON RUN] Session ${completedSession.happySessionId} fully spawned with webhook (tmux)`);
+                logger.debug(`[DAEMON RUN] Session ${completedSession.nastechSessionId} fully spawned with webhook (tmux)`);
                 resolve({
                   type: 'success',
-                  sessionId: completedSession.happySessionId!
+                  sessionId: completedSession.nastechSessionId!
                 });
               });
             });
@@ -524,7 +524,7 @@ export async function startDaemon(): Promise<void> {
 
           // TODO: In future, sessionId could be used with --resume to continue existing sessions
           // For now, we ignore it - each spawn creates a new session
-          return spawnTrackedHappyProcess({
+          return spawnTrackedNasTechProcess({
             args,
             cwd: directory,
             env: {
@@ -551,7 +551,7 @@ export async function startDaemon(): Promise<void> {
       }
     };
 
-    const spawnTrackedHappyProcess = ({
+    const spawnTrackedNasTechProcess = ({
       args,
       cwd,
       env,
@@ -619,20 +619,20 @@ export async function startDaemon(): Promise<void> {
 
         pidToAwaiter.set(nasTechProcess.pid!, (completedSession) => {
           clearTimeout(timeout);
-          logger.debug(`[DAEMON RUN] Session ${completedSession.happySessionId} fully spawned with webhook`);
+          logger.debug(`[DAEMON RUN] Session ${completedSession.nastechSessionId} fully spawned with webhook`);
           resolve({
             type: 'success',
-            sessionId: completedSession.happySessionId!
+            sessionId: completedSession.nastechSessionId!
           });
         });
       });
     };
 
-    const findTrackedSessionById = (happySessionId: string): TrackedSession | undefined => {
+    const findTrackedSessionById = (nastechSessionId: string): TrackedSession | undefined => {
       for (const session of pidToTrackedSession.values()) {
-        if (session.happySessionId === happySessionId) return session;
+        if (session.nastechSessionId === nastechSessionId) return session;
       }
-      return sessionIdToFinishedSession.get(happySessionId);
+      return sessionIdToFinishedSession.get(nastechSessionId);
     };
 
     const fetchServerSessionMetadata = async (sessionId: string, encryptionKey: Uint8Array, encryptionVariant: 'legacy' | 'dataKey'): Promise<Metadata | null> => {
@@ -652,35 +652,35 @@ export async function startDaemon(): Promise<void> {
       }
     };
 
-    const resumeSession = async (happySessionId: string, options?: { model?: string; permissionMode?: string }): Promise<SpawnSessionResult> => {
+    const resumeSession = async (nastechSessionId: string, options?: { model?: string; permissionMode?: string }): Promise<SpawnSessionResult> => {
       try {
-        const tracked = findTrackedSessionById(happySessionId);
+        const tracked = findTrackedSessionById(nastechSessionId);
         if (!tracked) {
-          return { type: 'error', errorMessage: `Session ${happySessionId} is not tracked by this daemon. It may have been started before the daemon or on another machine.` };
+          return { type: 'error', errorMessage: `Session ${nastechSessionId} is not tracked by this daemon. It may have been started before the daemon or on another machine.` };
         }
-        if (!tracked.happySessionMetadataFromLocalWebhook) {
-          return { type: 'error', errorMessage: `Session ${happySessionId} has no metadata. Cannot resume.` };
+        if (!tracked.nastechSessionMetadataFromLocalWebhook) {
+          return { type: 'error', errorMessage: `Session ${nastechSessionId} has no metadata. Cannot resume.` };
         }
         if (!tracked.encryption) {
-          return { type: 'error', errorMessage: `Session ${happySessionId} has no stored encryption data. It was likely started before this feature was available. Restart the daemon and start a new session to enable resume.` };
+          return { type: 'error', errorMessage: `Session ${nastechSessionId} has no stored encryption data. It was likely started before this feature was available. Restart the daemon and start a new session to enable resume.` };
         }
 
         // Webhook metadata may be stale (missing claudeSessionId/codexThreadId set after startup).
         // Fetch fresh metadata from server if needed.
-        let metadata = tracked.happySessionMetadataFromLocalWebhook;
+        let metadata = tracked.nastechSessionMetadataFromLocalWebhook;
         const needsFetch = (!metadata.claudeSessionId && (!metadata.flavor || metadata.flavor === 'claude'))
           || (!metadata.codexThreadId && metadata.flavor === 'codex');
         if (needsFetch) {
-          logger.debug(`[DAEMON RUN] Session ${happySessionId} missing agent session ID in webhook metadata, fetching from server`);
-          const serverMetadata = await fetchServerSessionMetadata(happySessionId, tracked.encryption.encryptionKey, tracked.encryption.encryptionVariant);
+          logger.debug(`[DAEMON RUN] Session ${nastechSessionId} missing agent session ID in webhook metadata, fetching from server`);
+          const serverMetadata = await fetchServerSessionMetadata(nastechSessionId, tracked.encryption.encryptionKey, tracked.encryption.encryptionVariant);
           if (serverMetadata) {
             metadata = serverMetadata;
-            tracked.happySessionMetadataFromLocalWebhook = serverMetadata;
+            tracked.nastechSessionMetadataFromLocalWebhook = serverMetadata;
           }
         }
 
         const launch = buildResumeLaunch(
-          { id: happySessionId, active: true, metadata },
+          { id: nastechSessionId, active: true, metadata },
           { startedBy: 'daemon', claudeStartingMode: 'remote' },
         );
 
@@ -693,12 +693,12 @@ export async function startDaemon(): Promise<void> {
 
         await fs.access(launch.cwd);
 
-        return spawnTrackedHappyProcess({
+        return spawnTrackedNasTechProcess({
           args: launch.args,
           cwd: launch.cwd,
           env: {
             ...process.env,
-            NASTECH_RECONNECT_SESSION_ID: happySessionId,
+            NASTECH_RECONNECT_SESSION_ID: nastechSessionId,
             NASTECH_RECONNECT_ENCRYPTION_KEY: encodeBase64(tracked.encryption.encryptionKey),
             NASTECH_RECONNECT_ENCRYPTION_VARIANT: tracked.encryption.encryptionVariant,
             NASTECH_RECONNECT_SEQ: String(tracked.encryption.seq),
@@ -722,7 +722,7 @@ export async function startDaemon(): Promise<void> {
 
       // Try to find by sessionId first
       for (const [pid, session] of pidToTrackedSession.entries()) {
-        if (session.happySessionId === sessionId ||
+        if (session.nastechSessionId === sessionId ||
           (sessionId.startsWith('PID-') && pid === parseInt(sessionId.replace('PID-', '')))) {
 
           if (session.startedBy === 'daemon' && session.childProcess) {
@@ -755,9 +755,9 @@ export async function startDaemon(): Promise<void> {
     // Handle child process exit — preserve session data for resume
     const onChildExited = (pid: number) => {
       const session = pidToTrackedSession.get(pid);
-      if (session?.happySessionId && session.encryption) {
-        sessionIdToFinishedSession.set(session.happySessionId, session);
-        logger.debug(`[DAEMON RUN] Process PID ${pid} exited, preserved session ${session.happySessionId} for resume`);
+      if (session?.nastechSessionId && session.encryption) {
+        sessionIdToFinishedSession.set(session.nastechSessionId, session);
+        logger.debug(`[DAEMON RUN] Process PID ${pid} exited, preserved session ${session.nastechSessionId} for resume`);
       } else {
         logger.debug(`[DAEMON RUN] Removing exited process PID ${pid} from tracking`);
       }
@@ -770,7 +770,7 @@ export async function startDaemon(): Promise<void> {
       stopSession,
       spawnSession,
       requestShutdown: () => requestShutdown('nastech'),
-      onHappySessionWebhook
+      onNasTechSessionWebhook
     });
 
     // Write initial daemon state (no lock needed for state file)
@@ -884,7 +884,7 @@ export async function startDaemon(): Promise<void> {
 
         // Release ownership BEFORE spawning the new daemon. Otherwise the spawned
         // `nastech daemon start` reads our still-present daemon.state.json, sees
-        // isDaemonRunningCurrentlyInstalledHappyVersion() === true, and exits —
+        // isDaemonRunningCurrentlyInstalledNasTechVersion() === true, and exits —
         // leaving nothing running once we also exit.
         apiMachine.shutdown();
         await stopControlServer();

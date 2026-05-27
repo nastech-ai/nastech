@@ -152,7 +152,7 @@ async function runAcp(opts: {
 
 **What it does** (simplified flow):
 1. Create API session (same pattern as runGemini but simpler)
-2. Start Happy MCP server for tool bridge
+2. Start NasTech MCP server for tool bridge
 3. Create AcpBackend with DefaultTransport (no vendor-specific transport)
 4. Create AcpSessionMapper
 5. Wire: `backend.onMessage(msg => mapper.mapMessage(msg).forEach(env => session.sendSessionProtocolMessage(env)))`
@@ -174,7 +174,7 @@ async function runAcp(opts: {
 
 ### Task 3: Register agents and add CLI commands
 
-Wire the generic runner into the CLI so users can run `happy acp gemini` or `happy acp opencode` or `happy acp -- custom-agent --flag`.
+Wire the generic runner into the CLI so users can run `nastech acp gemini` or `nastech acp opencode` or `nastech acp -- custom-agent --flag`.
 
 **Files**:
 - `packages/nastech-cli/src/index.ts` — add CLI command routing
@@ -191,7 +191,7 @@ const KNOWN_ACP_AGENTS: Record<string, { command: string; args: string[] }> = {
 No env vars, no API keys, no model config. Just command + args.
 
 - [ ] Define known ACP agent configs (command + args only)
-- [ ] Add CLI routing for `happy acp <agent-name>` and `happy acp -- <cmd> [args]`
+- [ ] Add CLI routing for `nastech acp <agent-name>` and `nastech acp -- <cmd> [args]`
 - [ ] Wire to `runAcp()` with resolved config
 - [ ] Write tests for agent config resolution
 - [ ] Run tests - must pass before next task

@@ -130,10 +130,10 @@ export type Session = {
 export const MachineMetadataSchema = z.object({
   host: z.string(),
   platform: z.string(),
-  happyCliVersion: z.string(),
+  nastechCliVersion: z.string(),
   homeDir: z.string(),
-  happyHomeDir: z.string(),
-  happyLibDir: z.string(),
+  nastechHomeDir: z.string(),
+  nastechLibDir: z.string(),
   cliAvailability: z.object({
     claude: z.boolean(),
     codex: z.boolean(),
@@ -144,8 +144,8 @@ export const MachineMetadataSchema = z.object({
   resumeSupport: z.object({
     rpcAvailable: z.boolean(),
     requiresSameMachine: z.boolean(),
-    requiresHappyAgentAuth: z.boolean(),
-    happyAgentAuthenticated: z.boolean(),
+    requiresNasTechAgentAuth: z.boolean(),
+    nastechAgentAuthenticated: z.boolean(),
     detectedAt: z.number(),
   }).optional(),
 })
@@ -307,9 +307,9 @@ export type Metadata = {
   mcpServers?: Array<{ name: string; status: string }>,
   skills?: string[],
   homeDir: string,
-  happyHomeDir: string,
-  happyLibDir: string,
-  happyToolsDir: string,
+  nastechHomeDir: string,
+  nastechLibDir: string,
+  nastechToolsDir: string,
   startedFromDaemon?: boolean,
   hostPid?: number,
   startedBy?: 'daemon' | 'terminal',

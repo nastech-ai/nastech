@@ -9,9 +9,9 @@ const VOICE_HARD_LIMIT_SECONDS = 18000; // 5 hours absolute cap per 30 days (eve
 const VOICE_MAX_CONVERSATIONS = 100;    // Max conversations trackable per 30 days (ElevenLabs page_size limit)
 const ELEVEN_LABS_API = "https://api.elevenlabs.io/v1/convai";
 
-function deriveElevenUserId(happyUserId: string): string {
+function deriveElevenUserId(nastechUserId: string): string {
     const hmac = crypto.createHmac("sha256", process.env.NASTECH_MASTER_SECRET!);
-    hmac.update(happyUserId);
+    hmac.update(nastechUserId);
     const digest = hmac.digest();
     const base64url = digest
         .toString("base64")
