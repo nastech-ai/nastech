@@ -1,10 +1,16 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
 
+const monorepoRoot = path.resolve(__dirname, "../..");
+const nastechWireSrc = path.resolve(monorepoRoot, "packages/nastech-wire/src/index.ts");
+
 const config = getDefaultConfig(__dirname, {
   // Enable CSS support for web
   isCSSEnabled: true,
 });
+
+// Watch the whole monorepo so Metro picks up workspace package changes
+config.watchFolders = [monorepoRoot];
 
 // Add support for .wasm files (required by Skia for all platforms)
 // Source: https://shopify.github.io/react-native-skia/docs/getting-started/installation/
@@ -33,6 +39,12 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   }
   if (moduleName === 'preact/hooks') {
     return { filePath: preactHooksCjsPath, type: 'sourceFile' };
+  }
+  // Resolve @nastech-ai/nastech-wire from TypeScript source directly.
+  // The dist/ folder is not built during EAS builds (SKIP_NASTECH_WIRE_BUILD=1),
+  // so pointing Metro at the source avoids a missing-file crash at bundle time.
+  if (moduleName === '@nastech-ai/nastech-wire') {
+    return { filePath: nastechWireSrc, type: 'sourceFile' };
   }
   if (baseResolveRequest) {
     return baseResolveRequest(context, moduleName, platform);
