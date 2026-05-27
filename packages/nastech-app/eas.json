@@ -28,7 +28,6 @@
       "autoIncrement": true,
       "distribution": "internal",
       "channel": "preview",
-      "resourceClass": "large",
       "android": {
         "buildType": "apk"
       },
@@ -36,8 +35,7 @@
         "APP_ENV": "preview",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
         "SKIP_NASTECH_WIRE_BUILD": "1",
-        "EAS_SKIP_AUTO_FINGERPRINT": "1",
-        "GRADLE_OPTS": "-Xmx8g -XX:MaxMetaspaceSize=512m"
+        "EAS_SKIP_AUTO_FINGERPRINT": "1"
       }
     },
     "preview": {
