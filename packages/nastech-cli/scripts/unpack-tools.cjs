@@ -128,14 +128,16 @@ async function unpackTools() {
         // Unpack difftastic
         const difftasticArchive = path.join(archivesDir, `difftastic-${platformDir}.tar.gz`);
         if (!fs.existsSync(difftasticArchive)) {
-            throw new Error(`Archive not found: ${difftasticArchive}`);
+            console.warn(`Tools archive not found (skipping): ${difftasticArchive}`);
+            return { success: true, skipped: true };
         }
         await unpackArchive(difftasticArchive, unpackedPath);
         
         // Unpack ripgrep
         const ripgrepArchive = path.join(archivesDir, `ripgrep-${platformDir}.tar.gz`);
         if (!fs.existsSync(ripgrepArchive)) {
-            throw new Error(`Archive not found: ${ripgrepArchive}`);
+            console.warn(`Tools archive not found (skipping): ${ripgrepArchive}`);
+            return { success: true, skipped: true };
         }
         await unpackArchive(ripgrepArchive, unpackedPath);
         
@@ -143,8 +145,8 @@ async function unpackTools() {
         return { success: true, alreadyUnpacked: false };
         
     } catch (error) {
-        console.error('Failed to unpack tools:', error.message);
-        throw error;
+        console.warn('Failed to unpack tools (non-fatal):', error.message);
+        return { success: false, error: error.message };
     }
 }
 
