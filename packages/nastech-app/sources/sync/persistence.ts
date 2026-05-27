@@ -81,7 +81,7 @@ export function saveLocalSettings(settings: LocalSettings) {
     mmkv.set('local-settings', JSON.stringify(settings));
 }
 
-export function loadThemePreference(): 'light' | 'dark' | 'adaptive' {
+export function loadThemePreference(): 'light' | 'dark' | 'adaptive' | 'amoled' {
     const localSettings = mmkv.getString('local-settings');
     if (localSettings) {
         try {
@@ -133,40 +133,21 @@ export function saveSessionDrafts(drafts: Record<string, string>) {
 
 export function loadNewSessionDraft(): NewSessionDraft | null {
     const raw = mmkv.getString(NEW_SESSION_DRAFT_KEY);
-    if (!raw) {
-        return null;
-    }
+    if (!raw) return null;
     try {
         const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== 'object') {
-            return null;
-        }
-
+        if (!parsed || typeof parsed !== 'object') return null;
         const input = typeof parsed.input === 'string' ? parsed.input : '';
         const selectedMachineId = typeof parsed.selectedMachineId === 'string' ? parsed.selectedMachineId : null;
         const selectedPath = typeof parsed.selectedPath === 'string' ? parsed.selectedPath : null;
         const agentType: NewSessionAgentType = parsed.agentType === 'codex' || parsed.agentType === 'gemini' || parsed.agentType === 'openclaw'
-            ? parsed.agentType
-            : 'claude';
-        const permissionMode: PermissionModeKey = typeof parsed.permissionMode === 'string'
-            ? parsed.permissionMode
-            : 'default';
+            ? parsed.agentType : 'claude';
+        const permissionMode: PermissionModeKey = typeof parsed.permissionMode === 'string' ? parsed.permissionMode : 'default';
         const modelMode: string = typeof parsed.modelMode === 'string' ? parsed.modelMode : 'default';
         const sessionType: NewSessionSessionType = parsed.sessionType === 'worktree' ? 'worktree' : 'simple';
         const worktreeKey = typeof parsed.worktreeKey === 'string' ? parsed.worktreeKey : null;
         const updatedAt = typeof parsed.updatedAt === 'number' ? parsed.updatedAt : Date.now();
-
-        return {
-            input,
-            selectedMachineId,
-            selectedPath,
-            agentType,
-            permissionMode,
-            modelMode,
-            sessionType,
-            worktreeKey,
-            updatedAt,
-        };
+        return { input, selectedMachineId, selectedPath, agentType, permissionMode, modelMode, sessionType, worktreeKey, updatedAt };
     } catch (e) {
         console.error('Failed to parse new session draft', e);
         return null;
@@ -262,7 +243,6 @@ export function saveProfile(profile: Profile) {
     mmkv.set('profile', JSON.stringify(profile));
 }
 
-// Simple temporary text storage for passing large strings between screens
 export function storeTempText(content: string): string {
     const id = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     mmkv.set(`temp_text_${id}`, content);
@@ -272,7 +252,6 @@ export function storeTempText(content: string): string {
 export function retrieveTempText(id: string): string | null {
     const content = mmkv.getString(`temp_text_${id}`);
     if (content) {
-        // Auto-delete after retrieval
         mmkv.delete(`temp_text_${id}`);
         return content;
     }
