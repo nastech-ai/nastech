@@ -9,14 +9,31 @@ import { useUnistyles, UnistylesRuntime } from 'react-native-unistyles';
 import { Switch } from '@/components/Switch';
 import { Appearance } from 'react-native';
 import * as SystemUI from 'expo-system-ui';
-import { darkTheme, lightTheme } from '@/theme';
+import { darkTheme, lightTheme, amoledTheme } from '@/theme';
 import { t, getLanguageNativeName, SUPPORTED_LANGUAGES } from '@/text';
 
-// Define known avatar styles for this version of the app
 type KnownAvatarStyle = 'pixelated' | 'gradient' | 'brutalist';
 
 const isKnownAvatarStyle = (style: string): style is KnownAvatarStyle => {
     return style === 'pixelated' || style === 'gradient' || style === 'brutalist';
+};
+
+// Theme cycle order: adaptive -> light -> dark -> amoled -> adaptive ...
+const THEME_CYCLE = ['adaptive', 'light', 'dark', 'amoled'] as const;
+type ThemeOption = typeof THEME_CYCLE[number];
+
+const THEME_LABELS: Record<ThemeOption, string> = {
+    adaptive: 'Auto',
+    light: 'Light',
+    dark: 'Dark',
+    amoled: 'AMOLED',
+};
+
+const THEME_ICONS: Record<ThemeOption, string> = {
+    adaptive: 'contrast-outline',
+    light: 'sunny-outline',
+    dark: 'moon-outline',
+    amoled: 'phone-portrait-outline',
 };
 
 export default function AppearanceSettingsScreen() {
@@ -33,63 +50,75 @@ export default function AppearanceSettingsScreen() {
     const [showFlavorIcons, setShowFlavorIcons] = useSettingMutable('showFlavorIcons');
     const [themePreference, setThemePreference] = useLocalSettingMutable('themePreference');
     const [preferredLanguage] = useSettingMutable('preferredLanguage');
-    
-    // Ensure we have a valid style for display, defaulting to gradient for unknown values
+
     const displayStyle: KnownAvatarStyle = isKnownAvatarStyle(avatarStyle) ? avatarStyle : 'gradient';
-    
-    // Language display
+
+    const currentTheme = (THEME_CYCLE.includes(themePreference as ThemeOption)
+        ? themePreference
+        : 'adaptive') as ThemeOption;
+
     const getLanguageDisplayText = () => {
         if (preferredLanguage === null) {
             const deviceLocale = Localization.getLocales()?.[0]?.languageTag ?? 'en-US';
             const deviceLanguage = deviceLocale.split('-')[0].toLowerCase();
-            const detectedLanguageName = deviceLanguage in SUPPORTED_LANGUAGES ? 
-                                        getLanguageNativeName(deviceLanguage as keyof typeof SUPPORTED_LANGUAGES) : 
-                                        getLanguageNativeName('en');
+            const detectedLanguageName = deviceLanguage in SUPPORTED_LANGUAGES ?
+                getLanguageNativeName(deviceLanguage as keyof typeof SUPPORTED_LANGUAGES) :
+                getLanguageNativeName('en');
             return `${t('settingsLanguage.automatic')} (${detectedLanguageName})`;
         } else if (preferredLanguage && preferredLanguage in SUPPORTED_LANGUAGES) {
             return getLanguageNativeName(preferredLanguage as keyof typeof SUPPORTED_LANGUAGES);
         }
         return t('settingsLanguage.automatic');
     };
+
+    const handleThemeCycle = () => {
+        const currentIndex = THEME_CYCLE.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % THEME_CYCLE.length;
+        const nextTheme = THEME_CYCLE[nextIndex];
+
+        setThemePreference(nextTheme);
+
+        if (nextTheme === 'adaptive') {
+            UnistylesRuntime.setAdaptiveThemes(true);
+            const systemTheme = Appearance.getColorScheme();
+            const color = systemTheme === 'dark'
+                ? darkTheme.colors.groupped.background
+                : lightTheme.colors.groupped.background;
+            UnistylesRuntime.setRootViewBackgroundColor(color);
+            SystemUI.setBackgroundColorAsync(color);
+        } else {
+            UnistylesRuntime.setAdaptiveThemes(false);
+            UnistylesRuntime.setTheme(nextTheme);
+            const themeObj = nextTheme === 'light' ? lightTheme
+                : nextTheme === 'amoled' ? amoledTheme
+                : darkTheme;
+            const color = themeObj.colors.groupped.background as string;
+            UnistylesRuntime.setRootViewBackgroundColor(color);
+            SystemUI.setBackgroundColorAsync(color);
+        }
+    };
+
     return (
         <ItemList style={{ paddingTop: 0 }}>
 
-            {/* Theme Settings */}
             <ItemGroup title={t('settingsAppearance.theme')} footer={t('settingsAppearance.themeDescription')}>
                 <Item
                     title={t('settings.appearance')}
-                    subtitle={themePreference === 'adaptive' ? t('settingsAppearance.themeDescriptions.adaptive') : themePreference === 'light' ? t('settingsAppearance.themeDescriptions.light') : t('settingsAppearance.themeDescriptions.dark')}
-                    icon={<Ionicons name="contrast-outline" size={29} color={theme.colors.status.connecting} />}
-                    detail={themePreference === 'adaptive' ? t('settingsAppearance.themeOptions.adaptive') : themePreference === 'light' ? t('settingsAppearance.themeOptions.light') : t('settingsAppearance.themeOptions.dark')}
-                    onPress={() => {
-                        const currentIndex = themePreference === 'adaptive' ? 0 : themePreference === 'light' ? 1 : 2;
-                        const nextIndex = (currentIndex + 1) % 3;
-                        const nextTheme = nextIndex === 0 ? 'adaptive' : nextIndex === 1 ? 'light' : 'dark';
-                        
-                        // Update the setting
-                        setThemePreference(nextTheme);
-                        
-                        // Apply the theme change immediately
-                        if (nextTheme === 'adaptive') {
-                            // Enable adaptive themes and set to system theme
-                            UnistylesRuntime.setAdaptiveThemes(true);
-                            const systemTheme = Appearance.getColorScheme();
-                            const color = systemTheme === 'dark' ? darkTheme.colors.groupped.background : lightTheme.colors.groupped.background;
-                            UnistylesRuntime.setRootViewBackgroundColor(color);
-                            SystemUI.setBackgroundColorAsync(color);
-                        } else {
-                            // Disable adaptive themes and set explicit theme
-                            UnistylesRuntime.setAdaptiveThemes(false);
-                            UnistylesRuntime.setTheme(nextTheme);
-                            const color = nextTheme === 'dark' ? darkTheme.colors.groupped.background : lightTheme.colors.groupped.background;
-                            UnistylesRuntime.setRootViewBackgroundColor(color);
-                            SystemUI.setBackgroundColorAsync(color);
-                        }
-                    }}
+                    subtitle={
+                        currentTheme === 'amoled'
+                            ? 'Pure black — saves battery on OLED screens'
+                            : currentTheme === 'adaptive'
+                                ? t('settingsAppearance.themeDescriptions.adaptive')
+                                : currentTheme === 'light'
+                                    ? t('settingsAppearance.themeDescriptions.light')
+                                    : t('settingsAppearance.themeDescriptions.dark')
+                    }
+                    icon={<Ionicons name={THEME_ICONS[currentTheme] as any} size={29} color={theme.colors.status.connecting} />}
+                    detail={THEME_LABELS[currentTheme]}
+                    onPress={handleThemeCycle}
                 />
             </ItemGroup>
 
-            {/* Language Settings */}
             <ItemGroup title={t('settingsLanguage.title')} footer={t('settingsLanguage.description')}>
                 <Item
                     title={t('settingsLanguage.currentLanguage')}
@@ -99,82 +128,36 @@ export default function AppearanceSettingsScreen() {
                 />
             </ItemGroup>
 
-            {/* Text Settings */}
-            {/* <ItemGroup title="Text" footer="Adjust text size and font preferences">
-                <Item
-                    title="Text Size"
-                    subtitle="Make text larger or smaller"
-                    icon={<Ionicons name="text-outline" size={29} color="#FF9500" />}
-                    detail="Default"
-                    onPress={() => { }}
-                    disabled
-                />
-                <Item
-                    title="Font"
-                    subtitle="Choose your preferred font"
-                    icon={<Ionicons name="text-outline" size={29} color="#FF9500" />}
-                    detail="System"
-                    onPress={() => { }}
-                    disabled
-                />
-            </ItemGroup> */}
-
-            {/* Display Settings */}
             <ItemGroup title={t('settingsAppearance.display')} footer={t('settingsAppearance.displayDescription')}>
                 <Item
                     title={t('settingsAppearance.inlineToolCalls')}
                     subtitle={t('settingsAppearance.inlineToolCallsDescription')}
                     icon={<Ionicons name="code-slash-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={viewInline}
-                            onValueChange={setViewInline}
-                        />
-                    }
+                    rightElement={<Switch value={viewInline} onValueChange={setViewInline} />}
                 />
                 <Item
                     title={t('settingsAppearance.expandTodoLists')}
                     subtitle={t('settingsAppearance.expandTodoListsDescription')}
                     icon={<Ionicons name="checkmark-done-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={expandTodos}
-                            onValueChange={setExpandTodos}
-                        />
-                    }
+                    rightElement={<Switch value={expandTodos} onValueChange={setExpandTodos} />}
                 />
                 <Item
                     title={t('settingsAppearance.showLineNumbersInDiffs')}
                     subtitle={t('settingsAppearance.showLineNumbersInDiffsDescription')}
                     icon={<Ionicons name="list-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={showLineNumbers}
-                            onValueChange={setShowLineNumbers}
-                        />
-                    }
+                    rightElement={<Switch value={showLineNumbers} onValueChange={setShowLineNumbers} />}
                 />
                 <Item
                     title={t('settingsAppearance.showLineNumbersInToolViews')}
                     subtitle={t('settingsAppearance.showLineNumbersInToolViewsDescription')}
                     icon={<Ionicons name="code-working-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={showLineNumbersInToolViews}
-                            onValueChange={setShowLineNumbersInToolViews}
-                        />
-                    }
+                    rightElement={<Switch value={showLineNumbersInToolViews} onValueChange={setShowLineNumbersInToolViews} />}
                 />
                 <Item
                     title={t('settingsAppearance.wrapLinesInDiffs')}
                     subtitle={t('settingsAppearance.wrapLinesInDiffsDescription')}
                     icon={<Ionicons name="return-down-forward-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={wrapLinesInDiffs}
-                            onValueChange={setWrapLinesInDiffs}
-                        />
-                    }
+                    rightElement={<Switch value={wrapLinesInDiffs} onValueChange={setWrapLinesInDiffs} />}
                 />
                 <Item
                     title={t('settingsAppearance.diffStyle')}
@@ -187,12 +170,7 @@ export default function AppearanceSettingsScreen() {
                     title={t('settingsAppearance.alwaysShowContextSize')}
                     subtitle={t('settingsAppearance.alwaysShowContextSizeDescription')}
                     icon={<Ionicons name="analytics-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={alwaysShowContextSize}
-                            onValueChange={setAlwaysShowContextSize}
-                        />
-                    }
+                    rightElement={<Switch value={alwaysShowContextSize} onValueChange={setAlwaysShowContextSize} />}
                 />
                 <Item
                     title={t('settingsAppearance.avatarStyle')}
@@ -210,50 +188,9 @@ export default function AppearanceSettingsScreen() {
                     title={t('settingsAppearance.showFlavorIcons')}
                     subtitle={t('settingsAppearance.showFlavorIconsDescription')}
                     icon={<Ionicons name="apps-outline" size={29} color="#5856D6" />}
-                    rightElement={
-                        <Switch
-                            value={showFlavorIcons}
-                            onValueChange={setShowFlavorIcons}
-                        />
-                    }
+                    rightElement={<Switch value={showFlavorIcons} onValueChange={setShowFlavorIcons} />}
                 />
-                {/* <Item
-                    title="Compact Mode"
-                    subtitle="Reduce spacing between elements"
-                    icon={<Ionicons name="contract-outline" size={29} color="#5856D6" />}
-                    disabled
-                    rightElement={
-                        <Switch
-                            value={false}
-                            disabled
-                        />
-                    }
-                />
-                <Item
-                    title="Show Avatars"
-                    subtitle="Display user and assistant avatars"
-                    icon={<Ionicons name="person-circle-outline" size={29} color="#5856D6" />}
-                    disabled
-                    rightElement={
-                        <Switch
-                            value={true}
-                            disabled
-                        />
-                    }
-                /> */}
             </ItemGroup>
-
-            {/* Colors */}
-            {/* <ItemGroup title="Colors" footer="Customize accent colors and highlights">
-                <Item
-                    title="Accent Color"
-                    subtitle="Choose your accent color"
-                    icon={<Ionicons name="color-palette-outline" size={29} color="#FF3B30" />}
-                    detail="Blue"
-                    onPress={() => { }}
-                    disabled
-                />
-            </ItemGroup> */}
         </ItemList>
     );
 }
