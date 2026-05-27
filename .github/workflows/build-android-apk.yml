@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,8 +27,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.26.1
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -74,7 +74,6 @@ jobs:
 
       - name: Create GitHub Release with APK link
         uses: softprops/action-gh-release@v2
-        if: always()
         with:
           tag_name: nastech-apk-${{ github.run_number }}
           name: "NasTech APK - Build #${{ github.run_number }}"
