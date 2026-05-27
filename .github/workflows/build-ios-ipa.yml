@@ -24,7 +24,7 @@ jobs:
           version: 10.11.0
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --ignore-scripts
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
