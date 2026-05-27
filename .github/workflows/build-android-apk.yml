@@ -18,13 +18,33 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+      - name: Setup Python (required for native modules)
+        uses: actions/setup-python@v5
         with:
-          version: 10.11.0
+          python-version: '3.11'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
-        run: pnpm install --ignore-scripts
+        run: pnpm install --no-frozen-lockfile
+        env:
+          SHARP_IGNORE_GLOBAL_LIBVIPS: "1"
+          SKIP_NASTECH_WIRE_BUILD: "1"
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
@@ -35,6 +55,8 @@ jobs:
       - name: Build Android APK
         working-directory: packages/nastech-app
         run: eas build -p android --profile android-apk --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Get APK download URL
         working-directory: packages/nastech-app
@@ -44,8 +66,27 @@ jobs:
 
       - name: Post APK link in summary
         run: |
-          echo "## ✅ Android APK Build Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Android APK Build Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Download your APK:** $APK_URL" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Or visit [expo.dev/builds](https://expo.dev/builds) to download" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create GitHub Release with APK link
+        uses: softprops/action-gh-release@v2
+        if: always()
+        with:
+          tag_name: nastech-apk-${{ github.run_number }}
+          name: "NasTech APK - Build #${{ github.run_number }}"
+          body: |
+            ## NasTech Android APK
+
+            Built from commit: ${{ github.sha }}
+            Branch: ${{ github.ref_name }}
+
+            **APK Download (from EAS):** ${{ env.APK_URL }}
+
+            Visit [expo.dev/builds](https://expo.dev/builds) for more details.
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
