@@ -7,6 +7,8 @@ jobs:
   android:
     name: Android APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,8 +25,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.26.1
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -70,6 +70,8 @@ jobs:
   ios:
     name: iOS IPA
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -86,8 +88,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.26.1
 
       - name: Get pnpm store directory
         id: pnpm-cache
