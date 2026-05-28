@@ -9,6 +9,10 @@
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
+      "cache": {
+        "key": "dev-gradle-v1",
+        "cacheDefaultPaths": true
+      },
       "env": {
         "APP_ENV": "development",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
@@ -19,6 +23,10 @@
       "developmentClient": true,
       "distribution": "store",
       "channel": "development",
+      "cache": {
+        "key": "dev-store-gradle-v1",
+        "cacheDefaultPaths": true
+      },
       "env": {
         "APP_ENV": "development",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
@@ -31,6 +39,10 @@
       "android": {
         "buildType": "apk"
       },
+      "cache": {
+        "key": "android-apk-gradle-v1",
+        "cacheDefaultPaths": true
+      },
       "env": {
         "APP_ENV": "preview",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
@@ -42,6 +54,10 @@
       "autoIncrement": true,
       "distribution": "internal",
       "channel": "preview",
+      "cache": {
+        "key": "preview-gradle-v1",
+        "cacheDefaultPaths": true
+      },
       "env": {
         "APP_ENV": "preview",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
@@ -51,6 +67,10 @@
       "autoIncrement": true,
       "distribution": "store",
       "channel": "preview",
+      "cache": {
+        "key": "preview-store-gradle-v1",
+        "cacheDefaultPaths": true
+      },
       "env": {
         "APP_ENV": "preview",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
@@ -59,6 +79,10 @@
     "production": {
       "autoIncrement": true,
       "channel": "production",
+      "cache": {
+        "key": "production-gradle-v1",
+        "cacheDefaultPaths": true
+      },
       "env": {
         "APP_ENV": "production",
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
