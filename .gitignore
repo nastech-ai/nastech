@@ -76,3 +76,13 @@ happy-workspaces/
 
 # third party tools
 .supervibe/
+
+# PGlite local database (runtime data, not source)
+data/pglite/
+
+# Replit attached assets / screenshots
+attached_assets/
+
+# local agent memory
+.agents/
+.local/
