@@ -34,6 +34,9 @@
     "packages/codium"
   ],
   "pnpm": {
+    "overrides": {
+      "web-secure-encryption>react": "19.2.0"
+    },
     "onlyBuiltDependencies": [
       "@more-tech/react-native-libsodium",
       "@prisma/client",

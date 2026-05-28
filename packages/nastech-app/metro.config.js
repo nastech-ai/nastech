@@ -10,7 +10,8 @@ const config = getDefaultConfig(__dirname, {
 });
 
 // Watch the whole monorepo so Metro picks up workspace package changes
-config.watchFolders = [monorepoRoot];
+// Merge with Expo's defaults instead of replacing them
+config.watchFolders = [...(config.watchFolders || []), monorepoRoot];
 
 // Add support for .wasm files (required by Skia for all platforms)
 // Source: https://shopify.github.io/react-native-skia/docs/getting-started/installation/
