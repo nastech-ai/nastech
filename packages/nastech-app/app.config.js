@@ -141,7 +141,6 @@ export default {
                         targetSdkVersion: 35,
                         minSdkVersion: 24,
                         buildToolsVersion: "35.0.0",
-                        kotlinVersion: "2.0.21",
                         ndkVersion: "27.1.12297006",
                         enableProguardInReleaseBuilds: false,
                         extraGradlePlugins: [],
