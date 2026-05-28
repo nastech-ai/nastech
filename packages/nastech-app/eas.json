@@ -88,28 +88,5 @@
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
       }
     }
-  },
-  "submit": {
-    "development-store": {
-      "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
-      }
-    },
-    "preview-store": {
-      "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
-      }
-    },
-    "production": {
-      "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
-      }
-    }
   }
 }
