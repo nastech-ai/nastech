@@ -5,7 +5,7 @@ const serverConfigStorage = new MMKV({ id: 'server-config' });
 
 const SERVER_KEY = 'custom-server-url';
 const LOG_SERVER_KEY = 'log-server-url';
-const DEFAULT_SERVER_URL = 'https://8aa0fa86-d3cf-4fdb-bbc1-82f82c283dd7-00-219atzvvwg23p.worf.replit.dev';
+const DEFAULT_SERVER_URL = 'https://api.nastech.workers.dev';
 
 export function getServerUrl(): string {
     return serverConfigStorage.getString(SERVER_KEY) ||

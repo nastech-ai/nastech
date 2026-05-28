@@ -113,7 +113,7 @@ async function serve() {
     process.env.DB_PROVIDER = process.env.DB_PROVIDER || "pglite";
     process.env.PGLITE_DIR = process.env.PGLITE_DIR || pgliteDir;
 
-    const masterSecret = process.env.NASTECH_MASTER_SECRET || process.env.HANDY_MASTER_SECRET;
+    const masterSecret = process.env.NASTECH_MASTER_SECRET;
     if (!masterSecret) {
         throw new Error("NASTECH_MASTER_SECRET is required");
     }

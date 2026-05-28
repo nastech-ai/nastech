@@ -88,5 +88,28 @@
         "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
       }
     }
+  },
+  "submit": {
+    "development-store": {
+      "ios": {
+        "appleId": "YOUR_APPLE_ID_EMAIL",
+        "ascAppId": "YOUR_ASC_APP_ID_DEV",
+        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+      }
+    },
+    "preview-store": {
+      "ios": {
+        "appleId": "YOUR_APPLE_ID_EMAIL",
+        "ascAppId": "YOUR_ASC_APP_ID_PREVIEW",
+        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+      }
+    },
+    "production": {
+      "ios": {
+        "appleId": "YOUR_APPLE_ID_EMAIL",
+        "ascAppId": "YOUR_ASC_APP_ID_PRODUCTION",
+        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+      }
+    }
   }
 }
