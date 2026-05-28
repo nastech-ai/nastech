@@ -138,10 +138,10 @@ export default {
                 "expo-build-properties",
                 {
                     android: {
-                        compileSdkVersion: 36,
+                        compileSdkVersion: 35,
                         targetSdkVersion: 35,
                         minSdkVersion: 24,
-                        buildToolsVersion: "36.0.0",
+                        buildToolsVersion: "35.0.0",
                         ndkVersion: "27.1.12297006",
                         enableProguardInReleaseBuilds: false,
                         extraGradlePlugins: [],

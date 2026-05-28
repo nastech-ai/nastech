@@ -1,0 +1,22 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "YOUR_APPLE_TEAM_ID.ai.nastech.ba"
+        ],
+        "components": [
+          {
+            "/": "*",
+            "comment": "Matches all routes"
+          }
+        ]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": [
+      "YOUR_APPLE_TEAM_ID.ai.nastech.ba"
+    ]
+  }
+}
