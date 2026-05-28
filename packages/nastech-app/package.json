@@ -163,7 +163,7 @@
     "qrcode": "^1.5.4",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-native": "0.83.1",
+    "react-native": "0.83.6",
     "react-native-audio-api": "^0.8.2",
     "react-native-device-info": "^14.1.1",
     "react-native-diff-view": "^1.1.2",
@@ -213,6 +213,15 @@
     "react-test-renderer": "19.0.0",
     "tsx": "^4.20.4",
     "typescript": "5.9.3"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "react-native-reanimated",
+        "@react-navigation/native",
+        "@react-navigation/native-stack"
+      ]
+    }
   },
   "private": true,
   "packageManager": "pnpm@10.11.0"
