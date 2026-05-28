@@ -1,3 +1,4 @@
-name = "nastech-privacy"
+name = "privacy"
 main = "privacy-worker.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
+account_id = "07dae6ebbb62f9ca210ff6bb37d31461"
