@@ -6,11 +6,21 @@ Free. Open source. Code anywhere.
 
 ## Installation
 
+### From GitHub (recommended)
+
 ```bash
-npm install -g nastech
+git clone https://github.com/nastech-ai/nastech
+cd nastech
+pnpm install
+pnpm --filter nastech cli:install
 ```
 
-> Migrated from the `nastech-coder` package. Thanks to [@franciscop](https://github.com/franciscop) for donating the `nastech` package name!
+This installs the `nastech` command globally on your system from the latest source.
+
+### Requirements
+
+- Node.js >= 20.0.0
+- pnpm >= 9
 
 ## Usage
 
@@ -134,14 +144,15 @@ nastech sandbox disable
 
 ```bash
 git clone https://github.com/nastech-ai/nastech
-cd nastech-cli
-yarn install
-yarn workspace nastech cli --help
+cd nastech
+pnpm install
+pnpm --filter nastech build
 ```
 
 ## Requirements
 
 - Node.js >= 20.0.0
+- pnpm >= 9
 - For Claude: `claude` CLI installed & logged in
 - For Codex: `codex` CLI installed & logged in
 - For Gemini: `npm install -g @google/gemini-cli` + `nastech connect gemini`

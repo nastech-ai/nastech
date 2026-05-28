@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Text } from '@/components/StyledText';
 import { Typography } from '@/constants/Typography';
@@ -11,6 +11,41 @@ import { layout } from '@/components/layout';
 import { t } from '@/text';
 import { getServerUrl, setServerUrl, validateServerUrl, getServerInfo } from '@/sync/serverConfig';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+
+type ServerStatus = 'checking' | 'online' | 'offline';
+
+function useServerStatus(serverUrl: string) {
+    const [status, setStatus] = useState<ServerStatus>('checking');
+    const [latency, setLatency] = useState<number | null>(null);
+
+    const check = useCallback(async () => {
+        setStatus('checking');
+        const start = Date.now();
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 5000);
+            const res = await fetch(`${serverUrl}/v1/health`, {
+                method: 'GET',
+                signal: controller.signal,
+            });
+            clearTimeout(timeout);
+            const ms = Date.now() - start;
+            setLatency(ms);
+            setStatus(res.ok ? 'online' : 'offline');
+        } catch {
+            setLatency(null);
+            setStatus('offline');
+        }
+    }, [serverUrl]);
+
+    useEffect(() => {
+        check();
+        const interval = setInterval(check, 30000);
+        return () => clearInterval(interval);
+    }, [check]);
+
+    return { status, latency, refresh: check };
+}
 
 const stylesheet = StyleSheet.create((theme) => ({
     keyboardAvoidingView: {
@@ -26,6 +61,31 @@ const stylesheet = StyleSheet.create((theme) => ({
         width: '100%',
         maxWidth: layout.maxWidth,
         alignSelf: 'center',
+    },
+    statusRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        width: '100%',
+        maxWidth: layout.maxWidth,
+        alignSelf: 'center',
+    },
+    statusDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    statusLabel: {
+        ...Typography.default('semiBold'),
+        fontSize: 14,
+        flex: 1,
+    },
+    statusLatency: {
+        ...Typography.default(),
+        fontSize: 12,
+        color: theme.colors.textSecondary,
     },
     labelText: {
         ...Typography.default('semiBold'),
@@ -80,33 +140,48 @@ export default function ServerConfigScreen() {
     const styles = stylesheet;
     const router = useRouter();
     const serverInfo = getServerInfo();
-    const [inputUrl, setInputUrl] = useState(serverInfo.isCustom ? getServerUrl() : '');
+    const currentServerUrl = getServerUrl();
+    const [inputUrl, setInputUrl] = useState(serverInfo.isCustom ? currentServerUrl : '');
     const [error, setError] = useState<string | null>(null);
     const [isValidating, setIsValidating] = useState(false);
+
+    const { status: serverStatus, latency, refresh: refreshStatus } = useServerStatus(currentServerUrl);
+
+    const statusColor = serverStatus === 'online'
+        ? theme.colors.status?.connected ?? '#34C759'
+        : serverStatus === 'offline'
+            ? theme.colors.textDestructive ?? '#FF3B30'
+            : theme.colors.status?.connecting ?? '#FF9500';
+
+    const statusLabel = serverStatus === 'online'
+        ? t('server.statusOnline') ?? 'Online'
+        : serverStatus === 'offline'
+            ? t('server.statusOffline') ?? 'Offline'
+            : t('server.statusChecking') ?? 'Checking…';
 
     const validateServer = async (url: string): Promise<boolean> => {
         try {
             setIsValidating(true);
             setError(null);
-            
+
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Accept': 'text/plain'
                 }
             });
-            
+
             if (!response.ok) {
                 setError(t('server.serverReturnedError'));
                 return false;
             }
-            
+
             const text = await response.text();
             if (!text.includes('Welcome to NasTech Server!')) {
                 setError(t('server.notValidNasTechServer'));
                 return false;
             }
-            
+
             return true;
         } catch (err) {
             setError(t('server.failedToConnectToServer'));
@@ -128,7 +203,6 @@ export default function ServerConfigScreen() {
             return;
         }
 
-        // Validate the server
         const isValid = await validateServer(inputUrl);
         if (!isValid) {
             return;
@@ -142,6 +216,7 @@ export default function ServerConfigScreen() {
 
         if (confirmed) {
             setServerUrl(inputUrl);
+            refreshStatus();
         }
     };
 
@@ -155,6 +230,7 @@ export default function ServerConfigScreen() {
         if (confirmed) {
             setServerUrl(null);
             setInputUrl('');
+            refreshStatus();
         }
     };
 
@@ -168,11 +244,27 @@ export default function ServerConfigScreen() {
                 }}
             />
 
-            <KeyboardAvoidingView 
+            <KeyboardAvoidingView
                 style={styles.keyboardAvoidingView}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <ItemList style={styles.itemListContainer}>
+                    <ItemGroup>
+                        <View style={styles.statusRow}>
+                            {serverStatus === 'checking' ? (
+                                <ActivityIndicator size="small" color={statusColor} />
+                            ) : (
+                                <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+                            )}
+                            <Text style={[styles.statusLabel, { color: statusColor }]}>
+                                {statusLabel}
+                            </Text>
+                            {serverStatus === 'online' && latency !== null && (
+                                <Text style={styles.statusLatency}>{latency}ms</Text>
+                            )}
+                        </View>
+                    </ItemGroup>
+
                     <ItemGroup footer={t('server.advancedFeatureFooter')}>
                         <View style={styles.contentContainer}>
                             <Text style={styles.labelText}>{t('server.customServerUrlLabel').toUpperCase()}</Text>
@@ -229,7 +321,7 @@ export default function ServerConfigScreen() {
                         </View>
                     </ItemGroup>
 
-                    </ItemList>
+                </ItemList>
             </KeyboardAvoidingView>
         </>
     );
