@@ -68,6 +68,7 @@ export default {
         ios: {
             supportsTablet: true,
             bundleIdentifier: bundleId,
+            googleServicesFile: "./GoogleService-Info.plist",
             config: {
                 usesNonExemptEncryption: false
             },
