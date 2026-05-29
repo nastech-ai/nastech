@@ -2,6 +2,23 @@ name: Build Android + iOS
 
 on:
   workflow_dispatch:
+    inputs:
+      android_profile:
+        description: 'Android EAS build profile'
+        required: false
+        default: 'android-apk'
+        type: choice
+        options:
+          - android-apk
+          - preview
+      ios_profile:
+        description: 'iOS EAS build profile'
+        required: false
+        default: 'preview-store'
+        type: choice
+        options:
+          - preview-store
+          - production
 
 jobs:
   android:
@@ -36,7 +53,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
@@ -54,20 +71,23 @@ jobs:
 
       - name: Build Android APK
         working-directory: packages/nastech-app
-        run: eas build -p android --profile android-apk --non-interactive
+        run: eas build -p android --profile ${{ github.event.inputs.android_profile || 'android-apk' }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Get APK URL
         working-directory: packages/nastech-app
         run: |
-          BUILD_URL=$(eas build:list --platform android --limit 1 --json --non-interactive | jq -r '.[0].artifacts.buildUrl')
-          echo "APK_URL=$BUILD_URL" >> $GITHUB_ENV
+          BUILD_URL=$(eas build:list --platform android --limit 1 --json --non-interactive | node -e "const d=[];process.stdin.on('data',c=>d.push(c));process.stdin.on('end',()=>{const b=JSON.parse(d.join(''))[0];console.log(b?.artifacts?.buildUrl||b?.artifactUrl||'');});")
+          echo "APK_URL=${BUILD_URL}" >> $GITHUB_ENV
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Summary
         run: |
           echo "## Android APK" >> $GITHUB_STEP_SUMMARY
-          echo "**Download:** $APK_URL" >> $GITHUB_STEP_SUMMARY
+          echo "**Profile:** ${{ github.event.inputs.android_profile || 'android-apk' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Download:** ${{ env.APK_URL }}" >> $GITHUB_STEP_SUMMARY
 
   ios:
     name: iOS IPA
@@ -101,7 +121,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
@@ -119,17 +139,20 @@ jobs:
 
       - name: Build iOS IPA
         working-directory: packages/nastech-app
-        run: eas build -p ios --profile preview --non-interactive
+        run: eas build -p ios --profile ${{ github.event.inputs.ios_profile || 'preview-store' }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Get IPA URL
         working-directory: packages/nastech-app
         run: |
-          BUILD_URL=$(eas build:list --platform ios --limit 1 --json --non-interactive | jq -r '.[0].artifacts.buildUrl')
-          echo "IPA_URL=$BUILD_URL" >> $GITHUB_ENV
+          BUILD_URL=$(eas build:list --platform ios --limit 1 --json --non-interactive | node -e "const d=[];process.stdin.on('data',c=>d.push(c));process.stdin.on('end',()=>{const b=JSON.parse(d.join(''))[0];console.log(b?.artifacts?.buildUrl||b?.artifactUrl||'');});")
+          echo "IPA_URL=${BUILD_URL}" >> $GITHUB_ENV
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Summary
         run: |
           echo "## iOS IPA" >> $GITHUB_STEP_SUMMARY
-          echo "**Download:** $IPA_URL" >> $GITHUB_STEP_SUMMARY
+          echo "**Profile:** ${{ github.event.inputs.ios_profile || 'preview-store' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Download:** ${{ env.IPA_URL }}" >> $GITHUB_STEP_SUMMARY
