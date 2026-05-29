@@ -596,6 +596,13 @@ async function handleDeleteMachine(request, env, machineId) {
 
 // ─── Push tokens ──────────────────────────────────────────────────────────────
 
+async function handleGetPushTokens(request, env) {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonR({ error: 'Unauthorized' }, 401);
+  const tokens = (await kvGet(env.NASTECH_KV, `push_tokens:${userId}`)) || [];
+  return jsonR({ tokens });
+}
+
 async function handleRegisterPushToken(request, env) {
   const userId = await requireAuth(request, env);
   if (!userId) return jsonR({ error: 'Unauthorized' }, 401);
@@ -605,8 +612,13 @@ async function handleRegisterPushToken(request, env) {
   if (!token) return jsonR({ error: 'Missing token' }, 400);
   const kv = env.NASTECH_KV;
   const tokens = (await kvGet(kv, `push_tokens:${userId}`)) || [];
-  if (!tokens.includes(token)) {
-    tokens.push(token);
+  const now = Date.now();
+  const existing = tokens.find(t => t.token === token);
+  if (!existing) {
+    tokens.push({ id: crypto.randomUUID(), token, createdAt: now, updatedAt: now });
+    await kvSet(kv, `push_tokens:${userId}`, tokens);
+  } else {
+    existing.updatedAt = now;
     await kvSet(kv, `push_tokens:${userId}`, tokens);
   }
   return jsonR({ success: true });
@@ -617,7 +629,78 @@ async function handleDeletePushToken(request, env, token) {
   if (!userId) return jsonR({ error: 'Unauthorized' }, 401);
   const kv = env.NASTECH_KV;
   const tokens = (await kvGet(kv, `push_tokens:${userId}`)) || [];
-  await kvSet(kv, `push_tokens:${userId}`, tokens.filter(t => t !== token));
+  await kvSet(kv, `push_tokens:${userId}`, tokens.filter(t => t.token !== token));
+  return jsonR({ success: true });
+}
+
+// ─── Expo Push Dispatch ───────────────────────────────────────────────────────
+
+async function sendExpoNotifications(messages) {
+  if (!messages.length) return [];
+  const results = [];
+  for (let i = 0; i < messages.length; i += 100) {
+    const batch = messages.slice(i, i + 100);
+    try {
+      const resp = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(batch),
+      });
+      if (!resp.ok) {
+        results.push(...batch.map(() => ({ status: 'error', message: `HTTP ${resp.status}` })));
+        continue;
+      }
+      const data = await resp.json();
+      results.push(...(data.data || batch.map(() => ({ status: 'error', message: 'No data' }))));
+    } catch (err) {
+      results.push(...batch.map(() => ({ status: 'error', message: 'Network error' })));
+    }
+  }
+  return results;
+}
+
+async function handleSessionPushEvent(request, env, sessionId) {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonR({ error: 'Unauthorized' }, 401);
+
+  let body;
+  try { body = await request.json(); } catch { return jsonR({ error: 'Invalid JSON' }, 400); }
+  const { kind, title, body: pushBody, data } = body;
+  if (!kind || !title || !pushBody) return jsonR({ error: 'Missing fields: kind, title, body' }, 400);
+
+  const kv = env.NASTECH_KV;
+
+  // Verify session belongs to user
+  const session = await kvGet(kv, `session:${sessionId}`);
+  if (!session || session.accountId !== userId) return jsonR({ error: 'Session not found' }, 404);
+
+  // Get push tokens
+  const tokenObjs = (await kvGet(kv, `push_tokens:${userId}`)) || [];
+  if (tokenObjs.length === 0) return jsonR({ success: true }); // No tokens, nothing to do
+
+  const messages = tokenObjs.map(t => ({
+    to: t.token || t,
+    title,
+    body: pushBody,
+    data: { sessionId, ...(data ?? {}), kind },
+    sound: 'default',
+    channelId: 'messages',
+  }));
+
+  const tickets = await sendExpoNotifications(messages);
+
+  // Remove any DeviceNotRegistered tokens
+  let changed = false;
+  const validTokens = tokenObjs.filter((t, i) => {
+    const ticket = tickets[i];
+    if (ticket && ticket.status === 'error' && ticket.details?.error === 'DeviceNotRegistered') {
+      changed = true;
+      return false;
+    }
+    return true;
+  });
+  if (changed) await kvSet(kv, `push_tokens:${userId}`, validTokens);
+
   return jsonR({ success: true });
 }
 
@@ -982,6 +1065,7 @@ export default {
       if (method === 'DELETE') return handleDeleteSession(request, env, m.id);
     }
     if ((m = matchPath(path, '/v1/sessions/:id/update')) && method === 'POST') return handleUpdateSession(request, env, m.id);
+    if ((m = matchPath(path, '/v1/sessions/:id/push-event')) && method === 'POST') return handleSessionPushEvent(request, env, m.id);
 
     // Machines
     if (method === 'GET'  && path === '/v1/machines') return handleGetMachines(request, env);
@@ -993,6 +1077,7 @@ export default {
     }
 
     // Push tokens
+    if (method === 'GET'  && path === '/v1/push-tokens') return handleGetPushTokens(request, env);
     if (method === 'POST' && path === '/v1/push-tokens') return handleRegisterPushToken(request, env);
     if ((m = matchPath(path, '/v1/push-tokens/:token')) && method === 'DELETE') return handleDeletePushToken(request, env, m.token);
 
