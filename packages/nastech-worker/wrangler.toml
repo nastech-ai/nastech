@@ -1,0 +1,14 @@
+name = "api"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+[[kv_namespaces]]
+binding = "NASTECH_KV"
+id = "e042ce0498df4ce38a9b85fad19b484e"
+
+# NASTECH_MASTER_SECRET is a secret — set via:
+#   wrangler secret put NASTECH_MASTER_SECRET
+# or via the Cloudflare dashboard Workers → api → Settings → Variables → Secret Variables
+
+[vars]
+# Non-secret env vars can go here if needed
