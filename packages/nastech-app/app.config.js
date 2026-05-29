@@ -68,7 +68,6 @@ export default {
         ios: {
             supportsTablet: true,
             bundleIdentifier: bundleId,
-            googleServicesFile: "./GoogleService-Info.plist",
             config: {
                 usesNonExemptEncryption: false
             },
@@ -138,10 +137,10 @@ export default {
                 "expo-build-properties",
                 {
                     android: {
-                        compileSdkVersion: 35,
+                        compileSdkVersion: 36,
                         targetSdkVersion: 35,
                         minSdkVersion: 24,
-                        buildToolsVersion: "35.0.0",
+                        buildToolsVersion: "36.0.0",
                         ndkVersion: "27.1.12297006",
                         enableProguardInReleaseBuilds: false,
                         extraGradlePlugins: [],
@@ -222,8 +221,11 @@ export default {
         ],
         updates: {
             url: "https://u.expo.dev/2e028f4f-23aa-41f0-87cf-662a5d1a999f",
+            checkAutomatically: "ON_LOAD",
             requestHeaders: {
-                "expo-channel-name": "production"
+                "expo-channel-name": variant === 'production' ? 'production'
+                    : variant === 'preview' ? 'preview'
+                    : 'development'
             }
         },
         experiments: {
