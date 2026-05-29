@@ -64,7 +64,7 @@ async function main() {
   });
 
   // Register the single tool and forward to HTTP MCP
-  server.registerTool(
+  (server as any).registerTool(
     'change_title',
     {
       description: 'Change the title of the current chat session',
@@ -73,7 +73,7 @@ async function main() {
         title: z.string().describe('The new title for the chat session'),
       },
     },
-    async (args) => {
+    async (args: { title: string }) => {
       try {
         const client = await ensureHttpClient();
         const response = await client.callTool({ name: 'change_title', arguments: args });

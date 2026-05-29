@@ -33,7 +33,7 @@ import {
 import type { MessageSentSource } from '@/track';
 import { parseToken } from '@/utils/parseToken';
 // RevenueCat removed — payments not used in NasTech
-const RevenueCat = { configure: () => {}, setLogLevel: () => {}, syncPurchases: async () => {}, getCustomerInfo: async () => ({ activeSubscriptions: {}, entitlements: { all: {} } }), getProducts: async () => [], purchaseStoreProduct: async () => ({ customerInfo: { activeSubscriptions: {}, entitlements: { all: {} } } }), getOfferings: async () => ({ current: null, all: {} }), presentPaywall: async () => 'CANCELLED' };
+const RevenueCat = { configure: (_config?: any) => {}, setLogLevel: (_level?: any) => {}, syncPurchases: async () => {}, getCustomerInfo: async () => ({ activeSubscriptions: {} as Record<string, any>, entitlements: { all: {} as Record<string, any> }, originalAppUserId: '', requestDate: new Date() }), getProducts: async (_ids?: any) => [] as any[], purchaseStoreProduct: async (_product?: any) => ({ customerInfo: { activeSubscriptions: {} as Record<string, any>, entitlements: { all: {} as Record<string, any> }, originalAppUserId: '', requestDate: new Date() } }), getOfferings: async () => ({ current: null, all: {} as Record<string, any> }), presentPaywall: async (_opts?: any) => 'CANCELLED' };
 const LogLevel = { DEBUG: 'DEBUG', INFO: 'INFO', WARN: 'WARN', ERROR: 'ERROR', VERBOSE: 'VERBOSE' };
 const PaywallResult = { PURCHASED: 'PURCHASED', RESTORED: 'RESTORED', CANCELLED: 'CANCELLED', NOT_PRESENTED: 'NOT_PRESENTED', ERROR: 'ERROR' };
 import { getServerUrl } from './serverConfig';
@@ -713,6 +713,15 @@ class Sync {
 
         this.getSendSync(sessionId).invalidate();
         this.maybeStartBackgroundSendWatchdog();
+    }
+
+    async sendQueuedTask(machineId: string, task: { taskDescription: string }): Promise<void> {
+        const sessions = Object.values(storage.getState().sessions);
+        const session = sessions.find(s => s.metadata?.machineId === machineId);
+        if (!session) {
+            throw new Error(`No active session found for machine ${machineId}`);
+        }
+        await this.sendMessage(session.id, task.taskDescription);
     }
 
     /** Server sent us settings — merge any pending local changes on top, then apply as one update. */

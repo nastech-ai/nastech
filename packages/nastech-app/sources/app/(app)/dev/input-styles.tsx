@@ -34,7 +34,7 @@ export default function InputStylesDemo() {
                             <Ionicons name="at" size={18} color="#666" />
                         </Pressable>
                         <Pressable style={{ padding: 6, marginRight: 2 }}>
-                            <Ionicons name="nastech-outline" size={18} color="#666" />
+                            <Ionicons name="rocket-outline" size={18} color="#666" />
                         </Pressable>
                         <Pressable style={{ padding: 6, marginRight: 2 }}>
                             <MaterialIcons name="format-bold" size={18} color="#666" />
@@ -185,7 +185,7 @@ export default function InputStylesDemo() {
                                 <MaterialIcons name="gif" size={24} color="#b9bbbe" />
                             </Pressable>
                             <Pressable style={{ marginLeft: 12 }}>
-                                <Ionicons name="nastech" size={24} color="#b9bbbe" />
+                                <Ionicons name="rocket" size={24} color="#b9bbbe" />
                             </Pressable>
                         </View>
                     </View>
@@ -230,7 +230,7 @@ export default function InputStylesDemo() {
                             minHeight: 42,
                         }}>
                             <Pressable style={{ marginRight: 8 }}>
-                                <Ionicons name="nastech-outline" size={24} color="#51585c" />
+                                <Ionicons name="rocket-outline" size={24} color="#51585c" />
                             </Pressable>
                             <TextInput
                                 style={{ flex: 1, fontSize: 16, color: '#000' }}
@@ -341,7 +341,7 @@ export default function InputStylesDemo() {
                         paddingBottom: 8,
                     }}>
                         <Pressable style={{ padding: 4, marginRight: 12 }}>
-                            <Ionicons name="nastech-outline" size={20} color="#8e8e8e" />
+                            <Ionicons name="rocket-outline" size={20} color="#8e8e8e" />
                         </Pressable>
                         <Pressable style={{ padding: 4, marginRight: 12 }}>
                             <MaterialIcons name="sticky-note-2" size={20} color="#8e8e8e" />
@@ -1032,7 +1032,7 @@ export default function InputStylesDemo() {
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             <Pressable style={{ padding: 4 }}>
-                                <Ionicons name="nastech-outline" size={20} color="#a0a0a0" />
+                                <Ionicons name="rocket-outline" size={20} color="#a0a0a0" />
                             </Pressable>
                             <Pressable style={{ padding: 4, marginLeft: 8 }}>
                                 <Ionicons name="at" size={20} color="#a0a0a0" />
@@ -1083,7 +1083,7 @@ export default function InputStylesDemo() {
                                         <Ionicons name="stats-chart" size={20} color="#1d9bf0" />
                                     </Pressable>
                                     <Pressable>
-                                        <Ionicons name="nastech-outline" size={20} color="#1d9bf0" />
+                                        <Ionicons name="rocket-outline" size={20} color="#1d9bf0" />
                                     </Pressable>
                                 </View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1494,7 +1494,7 @@ export default function InputStylesDemo() {
                             borderWidth: 1,
                             borderColor: '#e0e0e0',
                         }}>
-                            <Ionicons name="nastech-outline" size={24} color="#333" />
+                            <Ionicons name="rocket-outline" size={24} color="#333" />
                         </Pressable>
                         <Pressable style={{
                             width: 40,
@@ -1759,7 +1759,7 @@ export default function InputStylesDemo() {
                                         <Ionicons name="attach" size={20} color="#605e5c" />
                                     </Pressable>
                                     <Pressable style={{ marginRight: 16 }}>
-                                        <Ionicons name="nastech-outline" size={20} color="#605e5c" />
+                                        <Ionicons name="rocket-outline" size={20} color="#605e5c" />
                                     </Pressable>
                                     <Pressable>
                                         <MaterialIcons name="gif" size={20} color="#605e5c" />

@@ -44,7 +44,7 @@ function TaskRow({ task, onDelete }: { task: QueuedTask; onDelete: () => void })
             paddingHorizontal: 16,
             paddingVertical: 12,
             borderBottomWidth: 0.5,
-            borderBottomColor: theme.colors.separator,
+            borderBottomColor: theme.colors.divider,
             backgroundColor: theme.colors.surface,
         }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>

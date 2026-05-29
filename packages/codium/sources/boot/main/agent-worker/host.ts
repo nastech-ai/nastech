@@ -50,7 +50,7 @@ function ensureWorker(): Worker {
             console.error('[agent-worker] fatal:', msg.error)
         }
     })
-    w.on('error', (err) => {
+    w.on('error', (err: Error) => {
         // eslint-disable-next-line no-console
         console.error('[agent-worker] error:', err)
         crashAllSessions(err.message || 'Worker crashed')

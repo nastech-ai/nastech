@@ -154,10 +154,10 @@ export default function ServerConfigScreen() {
             : theme.colors.status?.connecting ?? '#FF9500';
 
     const statusLabel = serverStatus === 'online'
-        ? t('server.statusOnline') ?? 'Online'
+        ? 'Online'
         : serverStatus === 'offline'
-            ? t('server.statusOffline') ?? 'Offline'
-            : t('server.statusChecking') ?? 'Checking…';
+            ? 'Offline'
+            : 'Checking…';
 
     const validateServer = async (url: string): Promise<boolean> => {
         try {

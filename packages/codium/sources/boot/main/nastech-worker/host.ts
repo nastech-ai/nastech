@@ -75,7 +75,7 @@ function ensureWorker(): Worker {
             console.error('[nastech-worker] fatal:', msg.error)
         }
     })
-    w.on('error', (err) => {
+    w.on('error', (err: Error) => {
         // eslint-disable-next-line no-console
         console.error('[nastech-worker] error:', err)
         failPending(err.message || 'NasTech worker crashed')

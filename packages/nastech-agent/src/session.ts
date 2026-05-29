@@ -197,7 +197,7 @@ export class SessionClient extends EventEmitter {
                 text,
             },
             meta: {
-                sentFrom: 'nastech-agent'',
+                sentFrom: 'nastech-agent',
                 ...meta,
             },
         };

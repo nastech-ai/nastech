@@ -167,18 +167,18 @@ export default function AIApiSettingsScreen() {
     const [testing, setTesting] = React.useState(false);
     const [showAll, setShowAll] = React.useState(false);
 
-    const provider = PROVIDERS.find(p => p.id === selectedProvider) ?? PROVIDERS[0];
+    const provider = (PROVIDERS.find(p => p.id === selectedProvider) ?? PROVIDERS[0]) as { id: string; label: string; sublabel: string; placeholder: string; baseUrl: string | null; defaultModel: string; modelHint: string; docsUrl: string | null; color: string };
     const displayedProviders = showAll ? PROVIDERS : PROVIDERS.slice(0, 6);
 
     const inputStyle = {
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colors.input.background,
         color: theme.colors.text,
         borderRadius: 10,
         padding: 12,
         fontSize: 15,
         marginBottom: 8,
         borderWidth: 1,
-        borderColor: theme.colors.separator,
+        borderColor: theme.colors.divider,
     };
 
     const selectProvider = (id: ProviderId) => {
@@ -262,7 +262,7 @@ export default function AIApiSettingsScreen() {
                                     ? (theme.dark ? p.color + '22' : p.color + '18')
                                     : theme.colors.surface,
                                 borderBottomWidth: 0.5,
-                                borderBottomColor: theme.colors.separator,
+                                borderBottomColor: theme.colors.divider,
                             }}
                         >
                             <Ionicons
@@ -317,7 +317,7 @@ export default function AIApiSettingsScreen() {
 
                 {/* Base URL */}
                 {(selectedProvider === 'ollama' || selectedProvider === 'custom' ||
-                  (provider.baseUrl && provider.baseUrl !== null && provider.baseUrl !== '')) && (
+                  (provider.baseUrl && provider.baseUrl !== null)) && (
                     <ItemGroup title="Base URL" footer={selectedProvider === 'ollama' ? 'Make sure Ollama is running and accessible from your device.' : undefined}>
                         <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
                             <TextInput

@@ -21,13 +21,13 @@ function createMcpServer(handler: (title: string) => Promise<{ success: boolean;
         version: "1.0.0",
     });
 
-    mcp.registerTool('change_title', {
+    (mcp as any).registerTool('change_title', {
         description: 'Change the title of the current chat session',
         title: 'Change Chat Title',
         inputSchema: {
             title: z.string().describe('The new title for the chat session'),
         },
-    }, async (args) => {
+    }, async (args: { title: string }) => {
         const response = await handler(args.title);
         logger.debug('[nasTechMCP] Response:', response);
 
