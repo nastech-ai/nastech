@@ -70,7 +70,7 @@ export default defineConfig({
             },
             dedupe: ['react', 'react-dom'],
         },
-        plugins: [react(), tailwindcss()],
+        plugins: [react(), tailwindcss()] as any[],
         build: {
             rollupOptions: {
                 input: resolve(__dirname, 'sources/index.html'),
