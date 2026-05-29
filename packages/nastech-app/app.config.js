@@ -242,6 +242,7 @@ export default {
                 postHogKey: process.env.EXPO_PUBLIC_POSTHOG_API_KEY,
                 elevenLabsAgentId,
                 consoleLoggingDefault,
+                serverUrl: process.env.EXPO_PUBLIC_NASTECH_SERVER_URL,
                 buildCommitSha: buildMetadata.commitSha,
                 buildCommitTimestamp: buildMetadata.commitTimestamp,
             }
