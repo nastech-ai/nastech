@@ -1,9 +1,16 @@
 name: Build iOS IPA
 
 on:
-  push:
-    branches: [main, master]
   workflow_dispatch:
+    inputs:
+      profile:
+        description: 'EAS build profile'
+        required: false
+        default: 'preview-store'
+        type: choice
+        options:
+          - preview-store
+          - production
 
 jobs:
   build:
@@ -38,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
@@ -56,20 +63,24 @@ jobs:
 
       - name: Build iOS IPA
         working-directory: packages/nastech-app
-        run: eas build -p ios --profile preview --non-interactive
+        run: eas build -p ios --profile ${{ github.event.inputs.profile || 'preview-store' }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Get IPA download URL
         working-directory: packages/nastech-app
         run: |
-          BUILD_URL=$(eas build:list --platform ios --limit 1 --json --non-interactive | jq -r '.[0].artifacts.buildUrl')
-          echo "IPA_URL=$BUILD_URL" >> $GITHUB_ENV
+          BUILD_URL=$(eas build:list --platform ios --limit 1 --json --non-interactive | node -e "const d=[];process.stdin.on('data',c=>d.push(c));process.stdin.on('end',()=>{const b=JSON.parse(d.join(''))[0];console.log(b?.artifacts?.buildUrl||b?.artifactUrl||'');});")
+          echo "IPA_URL=${BUILD_URL}" >> $GITHUB_ENV
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Post IPA link in summary
+      - name: Build summary
         run: |
           echo "## iOS IPA Build Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Download your IPA:** $IPA_URL" >> $GITHUB_STEP_SUMMARY
+          echo "**Profile:** ${{ github.event.inputs.profile || 'preview-store' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**IPA Download:** ${{ env.IPA_URL }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Or visit [expo.dev/builds](https://expo.dev/builds) to download" >> $GITHUB_STEP_SUMMARY
+          echo "Or visit [expo.dev/builds](https://expo.dev/accounts/nastechai/projects/nastech/builds) to download" >> $GITHUB_STEP_SUMMARY
