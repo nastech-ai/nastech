@@ -40,7 +40,7 @@
         "buildType": "apk"
       },
       "cache": {
-        "key": "android-apk-gradle-v2",
+        "key": "android-apk-gradle-v1",
         "cacheDefaultPaths": true
       },
       "env": {
@@ -92,23 +92,23 @@
   "submit": {
     "development-store": {
       "ios": {
-        "appleId": "YOUR_APPLE_ID_EMAIL",
-        "ascAppId": "YOUR_ASC_APP_ID_DEV",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "appleId": "steve@bulkovo.com",
+        "ascAppId": "6748984254",
+        "appleTeamId": "466DQWDR8C"
       }
     },
     "preview-store": {
       "ios": {
-        "appleId": "YOUR_APPLE_ID_EMAIL",
-        "ascAppId": "YOUR_ASC_APP_ID_PREVIEW",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "appleId": "steve@bulkovo.com",
+        "ascAppId": "6749025570",
+        "appleTeamId": "466DQWDR8C"
       }
     },
     "production": {
       "ios": {
-        "appleId": "YOUR_APPLE_ID_EMAIL",
-        "ascAppId": "YOUR_ASC_APP_ID_PRODUCTION",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "appleId": "steve@bulkovo.com",
+        "ascAppId": "6748571505",
+        "appleTeamId": "466DQWDR8C"
       }
     }
   }
